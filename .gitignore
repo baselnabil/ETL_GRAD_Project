@@ -1,2 +1,14 @@
 .myenv/
 .env
+
+# Ignore Docker-related files
+docker-compose.override.yml
+.env
+logs/
+postgres-db-volume/
+mariadb-data/
+redis-data/
+logs/
+dags/
+plugins/
+config/
