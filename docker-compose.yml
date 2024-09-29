@@ -1,84 +1,67 @@
-version: "3.8"
+version: '3.8'
 
-x-airflow-common:
-  &airflow-common
+x-airflow-common: &airflow-common
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.2}
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
-    POSTGRES_HOST: postgres
-    POSTGRES_USER: ${POSTGRES_USER}
-    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    POSTGRES_DB: ${POSTGRES_DB}
-    MARIADB_HOST: mariadb
-    MARIADB_USER: ${MYSQL_USER}
-    MARIADB_PASSWORD: ${MYSQL_PASSWORD}
-    MARIADB_DATABASE: ${MYSQL_DATABASE}
   volumes:
-    - ./dags:/opt/airflow/dags
-    - ./logs:/opt/airflow/logs
-    - ./plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
+    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
     postgres:
       condition: service_healthy
-    mariadb:
-      condition: service_healthy
 
 services:
   postgres:
-    image: postgres:14
-    container_name: postgres_db
-    restart: always
+    image: postgres:13
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-    networks:
-      - airflow_network
+      - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
       retries: 5
       start_period: 5s
+    restart: always
 
   mariadb:
-    image: mariadb:10.7
-    container_name: mariadb_db
+    image: mariadb:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mydatabase}
+      MYSQL_USER: ${MYSQL_USER:-myuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mypassword}
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - mariadb-data:/var/lib/mysql
     ports:
       - "3306:3306"
-    networks:
-      - airflow_network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080  # Changed from 8080:8080
 
   airflow-webserver:
     <<: *airflow-common
     command: webserver
     ports:
-      - "8080:8080"
+      - "8080:8080"  # Kept as is, since Airflow UI is typically accessed on 8080
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
@@ -90,8 +73,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - airflow_network
 
   airflow-scheduler:
     <<: *airflow-common
@@ -107,8 +88,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - airflow_network
 
   airflow-init:
     <<: *airflow-common
@@ -127,14 +106,8 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
     user: "0:0"
     volumes:
-      - .:/sources
-    networks:
-      - airflow_network
+      - ${AIRFLOW_PROJ_DIR:-.}:/sources
 
 volumes:
-  postgres_data:
-  mariadb_data:
-
-networks:
-  airflow_network:
-    driver: bridge
+  postgres-db-volume:
+  mariadb-data:
