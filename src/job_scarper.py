@@ -24,3 +24,19 @@ def scrape_and_merge_jobs(locations, site_name, search_term, results_wanted, hou
     else:
         print(f"Found {len(all_jobs)} jobs in total")
         all_jobs.to_csv(output_file, quoting=csv.QUOTE_NONNUMERIC, escapechar="\\", index=False)
+
+joblocations = [
+    "Dallas, TX", 
+    "San Francisco, CA",
+    "Los Angeles, CA",
+]
+scrape_and_merge_jobs(
+    locations=joblocations,
+    site_name=["indeed"#, "zip_recruiter"
+               , "glassdoor"],
+    search_term='"data engineer"',
+    results_wanted=40,
+    hours_old=512,
+    country_indeed='USA',
+    output_file='./data/raw/jobs.csv'
+)
