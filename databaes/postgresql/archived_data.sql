@@ -27,3 +27,8 @@ BEGIN
 
 END;
 $$ LANGUAGE PLPGSQL;
+
+
+SELECT archive_old_data();
+SELECT * from  
+archived_staging_data;

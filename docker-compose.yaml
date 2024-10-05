@@ -104,10 +104,10 @@ services:
     image: mariadb:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-mydatabase}
-      MYSQL_USER: ${MYSQL_USER:-myuser}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mypassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mariadb-data:/var/lib/mysql
     ports:
