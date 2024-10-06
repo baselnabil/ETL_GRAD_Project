@@ -1,7 +1,8 @@
 -- Active: 1728139152079@@127.0.0.1@3306@model
 USE  model;
 
-CREATE TABLE test (
+CREATE TABLE big_table (
+    id SERIAL PRIMARY KEY,
     work_year INT,
     experience_level VARCHAR(50),
     employment_type VARCHAR(50),
@@ -15,5 +16,3 @@ CREATE TABLE test (
     company_size CHAR(1) CHECK (company_size IN ('S', 'M', 'L')),
 load_time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
-

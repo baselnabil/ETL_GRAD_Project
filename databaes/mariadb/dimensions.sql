@@ -1,13 +1,11 @@
 -- Date Dimension
+
+use model;
 CREATE TABLE date_dim (
     date_id INT AUTO_INCREMENT PRIMARY KEY,
-    work_year INT NOT NULL,
-    -- Add more date-related columns if needed
-    UNIQUE KEY (work_year)
-);
-
-
-
+    work_year INT NOT NULL);
+ SELECT * from job_dim;
+ 
 -- Job Dimension
 CREATE TABLE job_dim (
     job_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -33,26 +31,30 @@ CREATE TABLE company_dim (
 -- Currency Dimension
 CREATE TABLE currency_dim (
     currency_id INT AUTO_INCREMENT PRIMARY KEY,
-    salary_currency CHAR(3) NOT NULL,
-    UNIQUE KEY (salary_currency)
+    salary_currency CHAR(3) NOT NULL
 );
-
+SELECT * FROM jobs_fact;
 -- Fact Table
+
 CREATE TABLE jobs_fact (
     fact_id INT AUTO_INCREMENT PRIMARY KEY,
-    date_id INT,
     job_id INT,
     employee_id INT,
     company_id INT,
     currency_id INT,
     salary DECIMAL(15, 2) NOT NULL,
-    salary_in_usd DECIMAL(15, 2) NOT NULL,
-    FOREIGN KEY (date_id) REFERENCES date_dim(date_id),
-    FOREIGN KEY (job_id) REFERENCES job_dim(job_id),
-    FOREIGN KEY (employee_id) REFERENCES employee_dim(employee_id),
-    FOREIGN KEY (company_id) REFERENCES company_dim(company_id),
-    FOREIGN KEY (currency_id) REFERENCES currency_dim(currency_id)
+    salary_in_usd DECIMAL(15, 2) NOT NULL
 );
+
+ALTER TABLE jobs_fact
+ADD CONSTRAINT fk Foreign Key (job_id) REFERENCES job_dim(job_id);
+ALTER TABLE jobs_fact
+ADD CONSTRAINT fk2 Foreign Key (company_id) REFERENCES company_dim(company_id);
+ALTER TABLE jobs_fact
+ADD CONSTRAINT fk3 Foreign Key (currency_id) REFERENCES currency_dim(currency_id);
+ALTER TABLE jobs_fact
+ADD CONSTRAINT fk4 Foreign Key (employee_id) REFERENCES employee_dim(employee_id);
+
 
 -- Indexes for better query performance
 CREATE INDEX idx_jobs_fact_date ON jobs_fact(date_id);
