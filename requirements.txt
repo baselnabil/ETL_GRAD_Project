@@ -10,3 +10,5 @@ sqlalchemy==1.4.47
 wpip==0.1.1
 
 python-jobspy
+psycopg2-binary
+apache-airflow-providers-apache-spark
