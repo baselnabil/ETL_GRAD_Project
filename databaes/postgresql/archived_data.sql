@@ -1,3 +1,4 @@
+-- Active: 1728397029274@@localhost@5423@airflow
 CREATE TABLE archived_staging_data (
     work_year INT,
     experience_level VARCHAR(50),
@@ -30,5 +31,6 @@ $$ LANGUAGE PLPGSQL;
 
 
 SELECT archive_old_data();
+
 SELECT * from  
 archived_staging_data;

@@ -1,4 +1,4 @@
--- Active: 1727791091587@@127.0.0.1@5432@airflow
+-- Active: 1728397029274@@localhost@5423@airflow
 CREATE TABLE staging_data (
     work_year INT,
     experience_level VARCHAR(50),
@@ -28,4 +28,4 @@ ALTER COLUMN company_location TYPE VARCHAR(100) USING company_location::VARCHAR(
 ALTER COLUMN company_size TYPE CHAR(1) USING company_size::CHAR(1),
 ALTER COLUMN load_time TYPE TIMESTAMP USING load_time::TIMESTAMP;
 
-SELECT * FROM archived_staging_data;
+SELECT * FROM staging_data;

@@ -7,7 +7,6 @@ psycopg2-binary
 sqlalchemy
 
 # Additional dependencies
-python-jobspy
 apache-airflow
 apache-airflow-providers-apache-spark
 

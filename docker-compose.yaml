@@ -54,6 +54,8 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+    ports:
+      - '5423:5432'
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
