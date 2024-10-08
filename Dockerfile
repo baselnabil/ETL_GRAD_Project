@@ -1,4 +1,4 @@
-FROM apache/airflow:2.10.2
+FROM apache/airflow:2.7.1
 
 USER root
 
@@ -8,14 +8,22 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gcc \
         python3-dev \
-        default-jre \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+        default-jdk \
+        procps \
+        libpq-dev \
+        curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
-RUN export JAVA_HOME
+ENV PATH $JAVA_HOME/bin:$PATH
+
+RUN mkdir -p /opt/spark/jars && \
+    chmod -R 777 /opt/spark/jars
+
+RUN curl -L https://jdbc.postgresql.org/download/postgresql-42.6.0.jar -o /tmp/postgresql-42.6.0.jar && \
+    mv /tmp/postgresql-42.6.0.jar /opt/spark/jars/postgresql-42.6.0.jar
 
 USER airflow
-
-# Install PySpark and JDBC dependencies
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r /requirements.txt
