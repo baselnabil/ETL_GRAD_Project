@@ -1,7 +1,7 @@
--- Active: 1728139152079@@127.0.0.1@3306@model
+-- Active: 1728401115178@@127.0.0.1@3306@main
 -- Procedure to load data into job_dim
 
-use model;
+use main;
 CREATE PROCEDURE load_into_job_dim()
 BEGIN
     INSERT IGNORE INTO job_dim (job_title, experience_level, employment_type)
@@ -61,7 +61,7 @@ INSERT INTO jobs_fact (
         b.salary,
         b.salary_in_usd
     FROM big_table b
-    CROSS JOIN job_dim j ON j.job_id = b.id
+    JOIN job_dim j ON j.job_id = b.id
     JOIN employee_dim e ON e.employee_id = b.id
     JOIN company_dim c ON c.company_id = b.id
     JOIN currency_dim cu ON cu.currency_id = b.id;
@@ -69,7 +69,7 @@ INSERT INTO jobs_fact (
 END //
 
 DELIMITER ;
-drop PROCEDURE run_etl;
+drop PROCEDURE load_fact;
 -- Main procedure to orchestrate the entire ETL process
 CREATE PROCEDURE run_etl()
 BEGIN

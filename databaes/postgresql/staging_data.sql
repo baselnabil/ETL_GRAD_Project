@@ -29,3 +29,4 @@ ALTER COLUMN company_size TYPE CHAR(1) USING company_size::CHAR(1),
 ALTER COLUMN load_time TYPE TIMESTAMP USING load_time::TIMESTAMP;
 
 SELECT * FROM staging_data;
+

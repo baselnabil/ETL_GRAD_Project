@@ -1,6 +1,7 @@
+-- Active: 1728401115178@@127.0.0.1@3306@main
 -- Date Dimension
 
-use model;
+use main;
 CREATE TABLE date_dim (
     date_id INT AUTO_INCREMENT PRIMARY KEY,
     work_year INT NOT NULL);
@@ -13,13 +14,13 @@ CREATE TABLE job_dim (
     experience_level VARCHAR(50) NOT NULL,
     employment_type VARCHAR(50) NOT NULL
 );
-
+INSERT into job_dim (job_title, experience_level, employment_type) VALUES ('Data Scientist', 'SE', 'FT');
 -- Employee Dimension
 CREATE TABLE employee_dim (
     employee_id INT AUTO_INCREMENT PRIMARY KEY,
     employee_residence VARCHAR(100) NOT NULL
 );
-
+SELECT * FROM employee_dim;
 -- Company Dimension
 CREATE TABLE company_dim (
     company_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,8 +32,9 @@ CREATE TABLE company_dim (
 -- Currency Dimension
 CREATE TABLE currency_dim (
     currency_id INT AUTO_INCREMENT PRIMARY KEY,
-    salary_currency CHAR(3) NOT NULL
+    salary_currency CHAR(10) NOT NULL
 );
+DROP table currency_dim;
 SELECT * FROM jobs_fact;
 -- Fact Table
 
