@@ -1,6 +1,16 @@
 import mdx from '@next/mdx';
+import rehypeHighlight from "rehype-highlight";
+import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
 
-const withMDX = mdx();
+
+const withMDX = mdx({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [remarkGfm],
+    rehypePlugins: [rehypeSlug, rehypeHighlight],
+  },
+});
  
 /** @type {import('next').NextConfig} */
 const nextConfig = {

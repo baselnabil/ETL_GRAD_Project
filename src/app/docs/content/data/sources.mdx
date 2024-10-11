@@ -1,0 +1,48 @@
+---
+title: Data Sources
+description: Overview of the data sources used in GradSync
+---
+
+GradSync collects data from multiple sources in various formats to ensure comprehensive data integration and analysis. The core data sources include:
+
+<br />
+
+### JSON Files
+
+JSON (JavaScript Object Notation) files are used to store structured data in a lightweight and easy-to-read format. We collect JSON files from various APIs and data providers. JSON files are particularly useful for representing hierarchical data structures and are widely used in web applications.
+
+- **APIs**: We fetch data from multiple APIs that provide JSON responses. This allows us to integrate real-time data into our ETL pipeline.
+- **Data Providers**: Some data providers offer datasets in JSON format, which we download and process as part of our data integration workflow.
+
+<br />
+
+### CSV Files
+
+CSV (Comma-Separated Values) files are a common format for storing tabular data. We collect CSV files from various sources, including public datasets, internal databases, and third-party data providers. CSV files are easy to generate and parse, making them a popular choice for data exchange.
+
+- **Public Datasets**: We download CSV files from public data repositories and government websites. These datasets provide valuable information for our analysis.
+- **Internal Databases**: We export data from internal databases into CSV files for further processing and analysis.
+- **Third-Party Providers**: Some third-party data providers offer datasets in CSV format, which we integrate into our ETL pipeline.
+
+<br />
+
+### Parquet Files
+
+Parquet is a columnar storage file format optimized for big data processing. We use Parquet files to store large datasets efficiently. Parquet files offer several advantages, including efficient compression, faster query performance, and support for complex data types.
+
+- **Big Data Processing**: We use Parquet files to store and process large datasets in our ETL pipeline. The columnar storage format allows us to perform efficient data transformations and aggregations.
+- **Data Warehousing**: Parquet files are used in our data warehousing solutions to store historical data and support analytical queries.
+
+<br />
+
+### Web Scraping
+
+Web scraping involves extracting data from websites using custom Python scripts. We use web scraping to collect data that is not available through APIs or other structured formats. Our web scraping scripts are designed to navigate websites, extract relevant information, and store it in a structured format for further processing.
+
+- **Custom Python Scripts**: We develop custom Python scripts to scrape data from various websites. These scripts handle tasks such as navigating web pages, extracting data, and handling pagination.
+
+<br />
+
+## Conclusion
+
+By collecting data from multiple sources in various formats, GradSync ensures comprehensive data integration and analysis. The use of JSON files, CSV files, Parquet files, and web scraping allows us to gather diverse datasets and gain valuable insights. Our ETL pipeline processes these data sources efficiently, enabling us to deliver accurate and reliable results.

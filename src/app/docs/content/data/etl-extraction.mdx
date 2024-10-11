@@ -1,0 +1,57 @@
+---
+title: ETL - Extraction
+description: Overview of the data extraction process in GradSync
+---
+
+In GradSync, we use PySpark for data extraction due to its numerous advantages. PySpark, a Python API for Apache Spark, provides a powerful and efficient way to handle large-scale data extraction tasks. Here are the key benefits of using PySpark for data extraction:
+
+<br />
+
+### Distributed Processing
+
+PySpark leverages Apache Spark's distributed computing capabilities, allowing for efficient processing of large-scale datasets. By distributing data and computations across multiple nodes in a cluster, PySpark can handle massive datasets that would be impractical to process on a single machine.
+
+- **Parallelism**: PySpark executes tasks in parallel, significantly reducing the time required for data extraction.
+- **Fault Tolerance**: Spark's resilient distributed dataset (RDD) model ensures fault tolerance, automatically recovering from node failures.
+
+<br />
+
+### In-memory Computing
+
+PySpark's in-memory processing enables faster data operations compared to traditional disk-based processing. By keeping data in memory, PySpark minimizes the need for disk I/O operations, resulting in quicker data extraction and transformation.
+
+- **Speed**: In-memory computing accelerates data processing, making it ideal for real-time data extraction tasks.
+- **Efficiency**: Reduces the overhead associated with reading and writing data to disk, improving overall efficiency.
+
+<br />
+
+### Unified API
+
+PySpark provides a consistent API for various data formats, simplifying the extraction process from different sources. Whether dealing with JSON, CSV, Parquet, or other formats, PySpark's unified API allows for seamless data extraction.
+
+- **Versatility**: Supports a wide range of data formats, making it easy to integrate data from diverse sources.
+- **Simplicity**: A consistent API reduces the complexity of writing and maintaining extraction code.
+
+<br />
+
+### Scalability
+
+PySpark easily scales from small to large clusters, accommodating growing data volumes. As data volumes increase, PySpark can scale horizontally by adding more nodes to the cluster, ensuring that extraction processes remain efficient.
+
+- **Elasticity**: Can dynamically scale resources based on workload demands.
+- **Cost-Effectiveness**: Allows for cost-effective scaling by leveraging cloud-based infrastructure.
+
+<br />
+
+### Rich Ecosystem
+
+PySpark integrates well with other big data tools and libraries, enhancing its functionality. By leveraging Spark's rich ecosystem, PySpark can be combined with tools like Hadoop, Hive, and Kafka to create comprehensive data extraction pipelines.
+
+- **Integration**: Seamlessly integrates with various big data tools, enabling complex data workflows.
+- **Extensibility**: Supports the use of additional libraries and frameworks to extend its capabilities.
+
+<br />
+
+## Conclusion
+
+By using PySpark for data extraction, GradSync benefits from distributed processing, in-memory computing, a unified API, scalability, and a rich ecosystem. These advantages make PySpark an ideal choice for handling large-scale data extraction tasks, ensuring efficient and reliable data processing. Our ETL pipeline leverages PySpark's capabilities to extract data from diverse sources, enabling us to deliver accurate and timely insights.

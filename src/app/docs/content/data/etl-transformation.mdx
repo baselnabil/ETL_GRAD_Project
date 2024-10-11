@@ -1,0 +1,42 @@
+---
+title: ETL - Transformation
+description: Overview of the data transformation process in GradSync
+---
+
+After extracting data from various sources, GradSync performs a series of transformation steps to ensure the data is clean, consistent, and ready for analysis. The transformation process is crucial for converting raw data into a structured format that can be easily analyzed. Here are the key steps involved in the data transformation process:
+
+<br />
+
+### Data Cleaning using PySpark
+
+Data cleaning is the first step in the transformation process. It involves identifying and correcting errors, inconsistencies, and inaccuracies in the data. PySpark provides powerful tools for data cleaning, allowing us to handle large datasets efficiently.
+
+- **Handling Missing Values**: We use PySpark to identify and handle missing values in the dataset. This can involve filling missing values with appropriate defaults, interpolating values, or removing rows with missing data.
+- **Removing Duplicates**: PySpark's built-in functions help us identify and remove duplicate records, ensuring that each entry in the dataset is unique.
+- **Standardizing Formats**: We standardize data formats (e.g., date formats, string casing) to ensure consistency across the dataset.
+
+<br />
+
+### Merging Data into a Single DataFrame
+
+Once the data is cleaned, the next step is to merge data from different sources into a single DataFrame. This step is essential for creating a unified dataset that can be easily analyzed.
+
+- **Joining Data**: We use PySpark's join operations to merge data from multiple sources based on common keys. This allows us to combine related data into a single DataFrame.
+- **Concatenating Data**: In cases where data from different sources needs to be appended, we use PySpark's concatenation functions to combine datasets vertically.
+- **Handling Conflicts**: During the merging process, we handle conflicts (e.g., conflicting values for the same key) by applying predefined rules or aggregating values.
+
+<br />
+
+### Schema Inference and Validation
+
+Schema inference and validation are critical steps to ensure that the data conforms to the expected structure and types. PySpark provides tools for inferring and validating schemas, making it easier to enforce data quality standards.
+
+- **Schema Inference**: PySpark can automatically infer the schema of a dataset based on the data types of the columns. This helps in understanding the structure of the data and identifying any discrepancies.
+- **Schema Validation**: We validate the inferred schema against predefined schemas to ensure that the data meets the required standards. This involves checking data types, column names, and constraints.
+- **Error Handling**: During schema validation, we identify and handle errors (e.g., incorrect data types, missing columns) by applying appropriate transformations or flagging the data for further review.
+
+<br />
+
+## Conclusion
+
+The transformation process in GradSync involves data cleaning, merging data into a single DataFrame, and schema inference and validation. By leveraging PySpark's powerful tools, we ensure that the data is clean, consistent, and ready for analysis. These transformation steps are crucial for converting raw data into a structured format, enabling us to deliver accurate and reliable insights. Our ETL pipeline's transformation phase plays a vital role in maintaining data quality and integrity.

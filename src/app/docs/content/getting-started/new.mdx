@@ -1,0 +1,33 @@
+---
+title: Running the project
+description: How to get the project running
+---
+
+## This guide assumes that you have [Docker](https://www.docker.com/get-started) and [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed on your system.
+<br />
+### Step 1: Clone the Repository
+
+First, clone the GradSync repository from GitHub:
+
+```bash
+git clone https://github.com/baselnabil/ETL_GRAD_Project
+cd ETL_GRAD_Project
+```
+<br />
+### Step 2: Install Dependencies
+Ensure you have Docker and Docker Compose installed. Then, build the Docker images and start the services:
+```bash
+docker-compose build
+```
+
+<br />
+### Step 3: Run the project
+start the docker container:
+```bash
+docker-compose up -d
+```
+
+<br />
+### Step 4: Open airflow dashboard.
+
+Open your browser and navigate to http://localhost:8080 to access the GradSync application.

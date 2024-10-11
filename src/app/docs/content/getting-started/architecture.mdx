@@ -1,0 +1,71 @@
+---
+title: Architecture and Technologies Used
+description: Detailed overview of the architecture and technologies used in GradSync
+---
+
+GradSync utilizes a robust architecture to ensure efficient data processing and scalability. The core components of our architecture include:
+<br />
+# Architecture:
+
+<br />
+### Docker Containerization
+
+We use Docker to containerize all the tools and services required for GradSync. This containerization approach provides several benefits:
+
+- **Portability**: Docker containers can run on any machine that supports Docker, ensuring that our environment is consistent across different development, testing, and production setups.
+- **Isolation**: Each service runs in its own container, isolated from others. This isolation helps in managing dependencies and avoiding conflicts.
+- **Scalability**: Docker makes it easy to scale services horizontally by running multiple instances of a container.
+
+<br />
+### ETL Pipeline
+
+Our ETL (Extract, Transform, Load) pipeline is designed to handle large volumes of data efficiently. The pipeline processes data from various sources, cleans and transforms it, and loads it into optimized database systems for further analysis. Key features of our ETL pipeline include:
+
+- **Data Extraction**: We extract data from multiple sources, including JSON files, CSV files, Parquet files, and web scraping.
+- **Data Transformation**: The extracted data is cleaned and transformed using PySpark to ensure consistency and accuracy.
+- **Data Loading**: The transformed data is loaded into PostgreSQL and MariaDB databases for storage and analysis.
+
+<br />
+### Orchestration with Airflow
+
+We use Apache Airflow to orchestrate our ETL pipeline. Airflow allows us to define, schedule, and monitor complex workflows. It provides a user-friendly interface to manage and visualize the execution of tasks.
+
+<br />
+# Technologies Used
+
+GradSync leverages a variety of technologies to achieve its goals. Here are the key technologies used in our project:
+
+<br />
+### Docker
+
+Docker is used to containerize our applications, ensuring that they run consistently across different environments. It simplifies the deployment process and makes it easy to manage dependencies.
+
+<br />
+### PySpark
+
+PySpark is used for data transformation and processing. It allows us to handle large datasets efficiently and perform complex transformations using a distributed computing framework.
+
+<br />
+### Python
+
+Python is used for various tasks, including web scraping and data processing. Its rich ecosystem of libraries and ease of use make it an ideal choice for our project.
+
+<br />
+### PostgreSQL (Staging Database)
+
+PostgreSQL is used as our staging database. It provides robust support for SQL queries and is highly reliable for storing structured data temporarily before it is processed and moved to the OLAP database.
+
+<br />
+### MariaDB (OLAP Database)
+
+MariaDB is used as our OLAP (Online Analytical Processing) database. It is a fork of MySQL and offers similar features with additional enhancements. MariaDB is optimized for read-heavy operations and complex queries, making it ideal for analytical workloads.
+
+<br />
+### Pandas
+
+Pandas is a powerful data manipulation library in Python. It is used for data cleaning, transformation, and analysis, providing flexible data structures and functions to work with structured data.
+
+<br />
+## Conclusion
+
+The architecture and technologies used in GradSync are carefully chosen to ensure efficiency, scalability, and reliability. By leveraging Docker, PySpark, Python, PostgreSQL, MariaDB, and Pandas, we can build a robust ETL pipeline that processes and analyzes data effectively.

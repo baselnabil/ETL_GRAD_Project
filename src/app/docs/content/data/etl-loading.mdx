@@ -1,0 +1,43 @@
+---
+title: ETL - Loading
+description: Overview of the data loading process in GradSync
+---
+
+The final step in the ETL process is loading the transformed data into the target databases. In GradSync, we utilize two database systems for different purposes: PostgreSQL as a staging database and MariaDB as an OLAP (Online Analytical Processing) database. This dual-database approach ensures efficient data storage, retrieval, and analysis.
+
+<br />
+
+### PostgreSQL (Staging Database)
+
+PostgreSQL serves as our staging area for initial data loading. It provides a robust and reliable environment for temporarily storing data before it is moved to the OLAP database. Here are the key aspects of using PostgreSQL as a staging database:
+
+- **Initial Data Loading**: We use Pandas to populate data into the staging area. Pandas' DataFrame operations make it easy to manipulate and load data into PostgreSQL.
+- **Timestamp Tracking**: A timestamp column is added to each table to track data loading times. This helps in monitoring and auditing the data loading process.
+- **Schema Inference and Overwriting**: SQL commands are used for schema inference and overwriting. This ensures that the data conforms to the expected schema and allows for efficient updates.
+- **Historical Data Archiving**: An archive table is maintained for historical data. This allows us to keep track of changes over time and perform historical analysis.
+
+<br />
+
+### MariaDB (OLAP Database)
+
+MariaDB is chosen as our OLAP database due to its columnar storage capabilities, which offer several advantages for analytical workloads. Here are the key benefits of using MariaDB as an OLAP database:
+
+- **Improved Query Performance**: Columnar storage allows for faster analytical queries by reading only the necessary columns. This reduces the amount of data read from disk and speeds up query execution.
+- **Better Compression**: Data in columns often has similar values, leading to better compression ratios. This reduces storage requirements and improves I/O performance.
+- **Parallel Processing**: Columnar databases can easily parallelize operations on individual columns. This enhances the performance of complex analytical queries that involve aggregations and calculations on specific columns across many rows.
+
+<br />
+
+### Columnar Storage Benefits
+
+Columnar databases store data by column rather than by row, which is particularly beneficial for analytical workloads. Here are some additional benefits of columnar storage:
+
+- **Efficient Aggregations**: Columnar storage is optimized for aggregations and calculations on specific columns. This makes it ideal for OLAP workloads that involve summarizing large datasets.
+- **Reduced I/O**: By reading only the necessary columns, columnar storage reduces the amount of data read from disk. This improves query performance and reduces I/O bottlenecks.
+- **Data Compression**: Columnar storage achieves better compression ratios by storing similar values together. This reduces storage costs and improves query performance.
+
+<br />
+
+## Conclusion
+
+The loading process in GradSync involves populating data into PostgreSQL as a staging database and MariaDB as an OLAP database. By leveraging the strengths of both databases, we ensure efficient data storage, retrieval, and analysis. PostgreSQL provides a reliable staging area for initial data loading, while MariaDB's columnar storage capabilities enhance the performance of analytical queries. This dual-database approach enables us to deliver accurate and timely insights from our data.
