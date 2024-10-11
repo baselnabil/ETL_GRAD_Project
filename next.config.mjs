@@ -14,7 +14,7 @@ const withMDX = mdx({
  
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    basePath: "",
+    basePath: "/ETL_GRAD_Project",
     output: "export",
   // Configure `pageExtensions` to include MDX files
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
