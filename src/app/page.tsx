@@ -17,7 +17,7 @@ export default function Home() {
           </span>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link className="btn btn-primary" href="/docs">
+            <Link className="btn btn-primary" href="/docs/getting-started/overview">
               <i className="fa-solid fa-book mr-2"></i>
               Read the Docs
             </Link>
