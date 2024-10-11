@@ -36,7 +36,7 @@ jobs:
           #generator_config_file: ./next.config.mjs
 
       - name: Build with Next.js 🏗️
-        run: pnpm dlx next build
+        run: npx next build
 
       - name: Add .nojekyll
         run: touch ./.next/.nojekyll
