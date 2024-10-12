@@ -3,12 +3,16 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 from pyspark.sql.types import IntegerType, DoubleType, StringType
 def transform_data():
+    from pyspark.sql import SparkSession
+    from pyspark.sql import DataFrame
+    from pyspark.sql.functions import col
+    from pyspark.sql.types import IntegerType, DoubleType, StringType
     spark = SparkSession.builder \
         .appName('transformer') \
         .getOrCreate()
     
 
-    df = spark.read.parquet('/home/basel/main/Grad_proj/data/processed/part-00000-f203b3d4-cbbb-462f-a0d7-2286c496c5a7-c000.snappy.parquet')
+    df = spark.read.parquet('/opt.airflow/data/processed/part-00000-c5c2980d-ec69-49aa-8734-31f4fc2d1d63-c000.snappy.parquet')
     column_types = {
         'work_year': IntegerType(),
         'experience_level': StringType(),
@@ -30,5 +34,4 @@ def transform_data():
         # Filter out null values
         df = df.filter(col(column_name).isNotNull())
     print(df.schema)
-    # df.coalesce(1).write.parquet("/home/basel/main/Grad_proj/data/final", mode='overwrite')
-transform_data()
+    df.coalesce(1).write.parquet("/opt/airflow/data/final", mode='overwrite')

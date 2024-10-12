@@ -1,12 +1,14 @@
 from airflow import DAG
-from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 import sys
 
-sys.path.append('opt.airflow/scripts/')
+sys.path.append('/opt/airflow/scripts/')
 
-from extract import extract
-
+from extract.extract import extract_data
+from transform.transform import transform_data
 
 default_args = {
     'owner': 'airflow',
@@ -14,23 +16,46 @@ default_args = {
 }
 
 dag = DAG(
-    'spark_job_dag',
+    'ETL_DAG',
     default_args=default_args,
-    description='A DAG to run Spark job',
-    schedule_interval=None,
+    description='ETL pipeline',
+    schedule_interval='@daily',
 )
 
-spark_job = SparkSubmitOperator(
-    task_id='spark_job',
-    application='/path/to/your/spark_script.py',  # Path to your Spark script
-    conn_id='spark_default',  # Connection to your Spark cluster
-    conf={
-        'spark.driver.memory': '4g',
-        'spark.executor.memory': '4g',
-        'spark.executor.cores': '2',
-        'spark.executor.instances': '2',
-    },
-    dag=dag,
+
+create_schema = PostgresOperator(
+    task_id='create_schema',
+    postgres_conn_id='postgresqldata',
+    sql='''
+    CREATE TABLE IF NOT EXISTS staging_data (
+        work_year INT,
+        experience_level VARCHAR(50),
+        employment_type VARCHAR(50),
+        job_title VARCHAR(100),
+        salary DECIMAL(10, 2),
+        salary_currency VARCHAR(10),
+        salary_in_usd DECIMAL(10, 2),
+        employee_residence VARCHAR(100),
+        remote_ratio INT CHECK (remote_ratio IN (0, 50, 100)),
+        company_location VARCHAR(100),
+        company_size CHAR(1) CHECK (company_size IN ('S', 'M', 'L')),
+        load_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    ''',
+    dag=dag
 )
 
-spark_job
+
+# extract= PythonOperator(
+#     task_id='extract',
+#     python_callable=extract_data,
+#     dag=dag
+# )
+
+# transform = PythonOperator(
+#     task_id='transform',
+#     python_callable=transform_data,
+#     dag=dag
+# )
+create_schema
+# extract >> transform
