@@ -2,12 +2,10 @@
 pyspark
 pandas
 
-# Web and database interaction
-psycopg2-binary
-sqlalchemy
-
 # Additional dependencies
 apache-airflow
 apache-airflow-providers-apache-spark
 
 apache-airflow-providers-openlineage>=1.8.0
+
+jobspy-python

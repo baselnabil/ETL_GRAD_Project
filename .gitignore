@@ -9,6 +9,5 @@ postgres-db-volume/
 mariadb-data/
 redis-data/
 logs/
-dags/
 plugins/
 config/
