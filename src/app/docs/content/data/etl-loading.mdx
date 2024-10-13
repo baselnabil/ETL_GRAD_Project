@@ -7,6 +7,38 @@ The final step in the ETL process is loading the transformed data into the targe
 
 <br />
 
+```psql
+use main;
+CREATE TABLE date_dim (
+    date_id INT AUTO_INCREMENT PRIMARY KEY,
+    work_year INT NOT NULL);
+ SELECT * from job_dim;
+ 
+-- Job Dimension
+CREATE TABLE job_dim (
+    job_id INT AUTO_INCREMENT PRIMARY KEY,
+    job_title VARCHAR(100) NOT NULL,
+    experience_level VARCHAR(50) NOT NULL,
+    employment_type VARCHAR(50) NOT NULL
+);
+INSERT into job_dim (job_title, experience_level, employment_type) VALUES ('Data Scientist', 'SE', 'FT');
+-- Employee Dimension
+CREATE TABLE employee_dim (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_residence VARCHAR(100) NOT NULL
+);
+SELECT * FROM employee_dim;
+-- Company Dimension
+CREATE TABLE company_dim (
+    company_id INT AUTO_INCREMENT PRIMARY KEY,
+    company_location VARCHAR(100) NOT NULL,
+    company_size VARCHAR(20) NOT NULL,
+    remote_ratio INT NOT NULL
+);
+```
+
+<br />
+
 ### PostgreSQL (Staging Database)
 
 PostgreSQL serves as our staging area for initial data loading. It provides a robust and reliable environment for temporarily storing data before it is moved to the OLAP database. Here are the key aspects of using PostgreSQL as a staging database:

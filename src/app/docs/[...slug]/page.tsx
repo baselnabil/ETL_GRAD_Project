@@ -1,15 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import { useMDXComponents } from "@/mdx-components";
+import components from "@/mdx-components";
 import { compileMDX } from "next-mdx-remote/rsc";
-import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import Navbar from "@/app/_components/navbar";
 import { DocsMenu } from "../Nav";
 
-export const runtime = "nodejs";
-export const dynamic = "force-static";
 
 const contentSource = "src/app/docs/content";
 
@@ -30,15 +27,12 @@ export default async function DocsPage({ params }: Params) {
         : fs.readFileSync(path.join(process.cwd(), contentSource, "404.mdx"), "utf8");
 
 
-	// MDX accepts a list of React components
-	const components = useMDXComponents({});
-
 	// We compile the MDX content with the frontmatter, components, and plugins
 	const { content, frontmatter } = await compileMDX({
 		source,
 		options: {
 			mdxOptions: {
-				rehypePlugins: [rehypeHighlight, rehypeSlug],
+				rehypePlugins: [ rehypeSlug],
 				remarkPlugins: [remarkGfm],
 			},
 			parseFrontmatter: true,
