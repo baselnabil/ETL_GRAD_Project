@@ -5,17 +5,13 @@ import React from "react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import pythonLang from "react-syntax-highlighter/dist/cjs/languages/prism/python";
 import sqlLang from "react-syntax-highlighter/dist/cjs/languages/prism/sql";
-import psqlLang from "react-syntax-highlighter/dist/cjs/languages/prism/sql";
-import mariadbLang from "react-syntax-highlighter/dist/cjs/languages/prism/sql";
-import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { a11yDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import CodeBlock from "./app/_components/CodeBlock";
 
 
 SyntaxHighlighter.registerLanguage("py", pythonLang);
 
 SyntaxHighlighter.registerLanguage("sql", sqlLang);
-SyntaxHighlighter.registerLanguage("psql", psqlLang);
-SyntaxHighlighter.registerLanguage("mariadb", mariadbLang);
 
 // Define custom MDX components
 const components: MDXComponents = {
@@ -60,7 +56,7 @@ const components: MDXComponents = {
     const hasLang = /language-(\w+)/.exec(className || "");
     return hasLang ? (
       <SyntaxHighlighter
-        style={oneDark}
+        style={a11yDark}
         language={hasLang[1]}
         PreTag="div"
         className="mockup-code scrollbar-thin scrollbar-track-base-content/5 scrollbar-thumb-base-content/40 scrollbar-track-rounded-md scrollbar-thumb-rounded"
