@@ -65,6 +65,14 @@ def load_postgres():
     from load.loaders import postgresql_loader
     postgresql_loader()
 
+def load_mariadb():
+    from load.loaders import mariadb_loader
+    mariadb_loader()
+def load_maria_dim():
+    from load.loaders import mariadb_dimensions_loader
+    mariadb_dimensions_loader()
+
+
 # Task1= PythonOperator(
 #     task_id='extract',
 #     python_callable=extract_data,
@@ -99,7 +107,15 @@ Task3 = PythonOperator(
     python_callable=load_postgres,
     dag=dag
 )
+Task4=PythonOperator(
+    task_id='load_mariadb',
+    python_callable=load_mariadb,
+    dag=dag
+)
+Task5=PythonOperator(
+    task_id='load_maria_dim',
+    python_callable=load_maria_dim,
+    dag=dag
+)
 
-
-
-create_schema >> Task1 >> Task2 >> Task3 
+create_schema >> Task1 >> Task2 >> Task3 >>[Task4,Task5]
