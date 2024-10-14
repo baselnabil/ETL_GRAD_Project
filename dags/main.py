@@ -1,25 +1,34 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.utils.dates import days_ago
+# from airflow.utils.dates import days_ago
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 import sys
+from datetime import datetime, timedelta
+
 
 sys.path.append('/opt/airflow/scripts/')
 
-from extract.extract import extract_data
-from transform.transform import transform_data
+# from extract.extract import extract_data
+# from transform.transform import transform_data
+# from load.loaders import postgresql_loader
 
 default_args = {
     'owner': 'airflow',
-    'start_date': days_ago(1),
+    # 'start_date': days_ago(1),
+    'retries':5,
+    'retry_delay':timedelta(minutes=5),
+    'email_on_failure': True,  
+    'email_on_retry': True,
+    'depends_on_past': True
 }
 
 dag = DAG(
-    'ETL_DAG',
+    dag_id='main_v07',
+    start_date=datetime(2024,10,1),
     default_args=default_args,
     description='ETL pipeline',
-    schedule_interval='@daily',
+    schedule_interval='@daily'
 )
 
 
@@ -44,18 +53,53 @@ create_schema = PostgresOperator(
     ''',
     dag=dag
 )
+def extract():
+    from extract.extract import extract_data
+    extract_data()
 
+def transform():
+    from transform.transform import transform_data
+    transform_data()
 
-# extract= PythonOperator(
+def load_postgres():
+    from load.loaders import postgresql_loader
+    postgresql_loader()
+
+# Task1= PythonOperator(
 #     task_id='extract',
 #     python_callable=extract_data,
 #     dag=dag
 # )
 
-# transform = PythonOperator(
+# Task2 = PythonOperator(
 #     task_id='transform',
 #     python_callable=transform_data,
 #     dag=dag
 # )
-create_schema
-# extract >> transform
+# Task3=PythonOperator(
+#     task_id='load_postgres',
+#     python_callable=postgresql_loader,
+#     dag=dag
+# )
+
+Task1 = PythonOperator(
+    task_id='extract',
+    python_callable=extract,
+    dag=dag
+)
+
+Task2 = PythonOperator(
+    task_id='transform',
+    python_callable=transform,
+    dag=dag
+)
+
+Task3 = PythonOperator(
+    task_id='load_postgres',
+    python_callable=load_postgres,
+    dag=dag
+)
+
+
+
+create_schema >> Task1 >> Task2 >> Task3 
