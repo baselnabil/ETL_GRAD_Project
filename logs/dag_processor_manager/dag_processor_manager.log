@@ -1,0 +1,29 @@
+[2024-10-15T11:45:40.947+0000] {manager.py:487} INFO - Processing files using up to 2 processes at a time 
+[2024-10-15T11:45:40.947+0000] {manager.py:488} INFO - Process each file at most once every 30 seconds
+[2024-10-15T11:45:40.947+0000] {manager.py:489} INFO - Checking for new files in /opt/airflow/dags every 300 seconds
+[2024-10-15T11:45:40.947+0000] {manager.py:759} INFO - Searching for files in /opt/airflow/dags
+[2024-10-15T11:45:40.948+0000] {manager.py:762} INFO - There are 1 files in /opt/airflow/dags
+[2024-10-15T11:45:41.051+0000] {manager.py:893} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                    PID  Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------  -----  ---------  --------  ----------  --------------  ----------
+/opt/airflow/dags/main.py    184  0.03s             0           0
+================================================================================
+[2024-10-15T11:46:11.185+0000] {manager.py:893} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                  PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/main.py                           1           0  0.38s           2024-10-15T11:45:41
+================================================================================
+[2024-10-15T11:46:41.687+0000] {manager.py:893} INFO - 
+================================================================================
+DAG File Processing Stats
+
+File Path                  PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+-------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/main.py                           1           0  0.23s           2024-10-15T11:46:11
+================================================================================
