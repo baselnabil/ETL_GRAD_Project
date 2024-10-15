@@ -1,0 +1,108 @@
+[2024-10-15T17:38:55.885+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-15T17:38:55.902+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v09.create_dimensions manual__2024-10-15T17:38:54.683502+00:00 [queued]>
+[2024-10-15T17:38:55.911+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v09.create_dimensions manual__2024-10-15T17:38:54.683502+00:00 [queued]>
+[2024-10-15T17:38:55.911+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-15T17:38:56.048+0000] {taskinstance.py:2888} INFO - Executing <Task(MySqlOperator): create_dimensions> on 2024-10-15 17:38:54.683502+00:00
+[2024-10-15T17:38:56.054+0000] {standard_task_runner.py:72} INFO - Started process 328 to run task
+[2024-10-15T17:38:56.060+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v09', 'create_dimensions', 'manual__2024-10-15T17:38:54.683502+00:00', '--job-id', '11', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmpxba4u9fk']
+[2024-10-15T17:38:56.063+0000] {standard_task_runner.py:105} INFO - Job 11: Subtask create_dimensions
+[2024-10-15T17:38:56.107+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v09.create_dimensions manual__2024-10-15T17:38:54.683502+00:00 [running]> on host d4bd6f97aac1
+[2024-10-15T17:38:56.173+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v09' AIRFLOW_CTX_TASK_ID='create_dimensions' AIRFLOW_CTX_EXECUTION_DATE='2024-10-15T17:38:54.683502+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-15T17:38:54.683502+00:00'
+[2024-10-15T17:38:56.174+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-15T17:38:56.185+0000] {sql.py:274} INFO - Executing: 
+    USE main;
+    
+    CREATE TABLE IF NOT EXISTS job_dim (
+        job_id INT AUTO_INCREMENT PRIMARY KEY,
+        job_title VARCHAR(100) NOT NULL,
+        experience_level VARCHAR(50) NOT NULL,
+        employment_type VARCHAR(50) NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS employee_dim (
+        employee_id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_residence VARCHAR(100) NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS company_dim (
+        company_id INT AUTO_INCREMENT PRIMARY KEY,
+        company_location VARCHAR(100) NOT NULL,
+        company_size VARCHAR(20) NOT NULL,
+        remote_ratio INT NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS currency_dim (
+        currency_id INT AUTO_INCREMENT PRIMARY KEY,
+        salary_currency CHAR(10) NOT NULL
+    );
+    
+[2024-10-15T17:38:56.192+0000] {base.py:84} INFO - Retrieving connection 'mariadb'
+[2024-10-15T17:38:56.200+0000] {base.py:84} INFO - Retrieving connection 'mariadb'
+[2024-10-15T17:38:56.213+0000] {taskinstance.py:3310} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 767, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 733, in _execute_callable
+    return ExecutionCallableRunner(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/utils/operator_helpers.py", line 252, in run
+    return self.func(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/baseoperator.py", line 406, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/operators/sql.py", line 280, in execute
+    output = hook.run(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/hooks/sql.py", line 385, in run
+    with closing(self.get_conn()) as conn:
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/mysql/hooks/mysql.py", line 194, in get_conn
+    return MySQLdb.connect(**conn_config)
+  File "/home/airflow/.local/lib/python3.8/site-packages/MySQLdb/__init__.py", line 121, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/MySQLdb/connections.py", line 193, in __init__
+    super().__init__(*args, **kwargs2)
+MySQLdb.OperationalError: (1045, "Access denied for user 'root'@'172.18.0.5' (using password: YES)")
+[2024-10-15T17:38:56.224+0000] {taskinstance.py:1225} INFO - Marking task as UP_FOR_RETRY. dag_id=main_v09, task_id=create_dimensions, run_id=manual__2024-10-15T17:38:54.683502+00:00, execution_date=20241015T173854, start_date=20241015T173855, end_date=20241015T173856
+[2024-10-15T17:38:56.236+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-15T17:38:56.237+0000] {standard_task_runner.py:124} ERROR - Failed to execute job 11 for task create_dimensions ((1045, "Access denied for user 'root'@'172.18.0.5' (using password: YES)"); 328)
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/task/task_runner/standard_task_runner.py", line 117, in _start_by_fork
+    ret = args.func(args, dag=self.dag)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/cli/cli_config.py", line 49, in command
+    return func(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/utils/cli.py", line 115, in wrapper
+    return f(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/cli/commands/task_command.py", line 483, in task_run
+    task_return_code = _run_task_by_selected_method(args, _dag, ti)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/cli/commands/task_command.py", line 256, in _run_task_by_selected_method
+    return _run_raw_task(args, ti)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/cli/commands/task_command.py", line 341, in _run_raw_task
+    return ti._run_raw_task(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/utils/session.py", line 97, in wrapper
+    return func(*args, session=session, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 3004, in _run_raw_task
+    return _run_raw_task(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 273, in _run_raw_task
+    TaskInstance._execute_task_with_callbacks(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 3158, in _execute_task_with_callbacks
+    result = self._execute_task(context, task_orig)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 3182, in _execute_task
+    return _execute_task(self, context, task_orig)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 767, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 733, in _execute_callable
+    return ExecutionCallableRunner(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/utils/operator_helpers.py", line 252, in run
+    return self.func(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/baseoperator.py", line 406, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/operators/sql.py", line 280, in execute
+    output = hook.run(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/hooks/sql.py", line 385, in run
+    with closing(self.get_conn()) as conn:
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/mysql/hooks/mysql.py", line 194, in get_conn
+    return MySQLdb.connect(**conn_config)
+  File "/home/airflow/.local/lib/python3.8/site-packages/MySQLdb/__init__.py", line 121, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/MySQLdb/connections.py", line 193, in __init__
+    super().__init__(*args, **kwargs2)
+MySQLdb.OperationalError: (1045, "Access denied for user 'root'@'172.18.0.5' (using password: YES)")
+[2024-10-15T17:38:56.270+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 1
+[2024-10-15T17:38:56.290+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

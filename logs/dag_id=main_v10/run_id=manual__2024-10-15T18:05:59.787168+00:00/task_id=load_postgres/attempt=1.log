@@ -1,0 +1,18 @@
+[2024-10-15T18:06:26.793+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-15T18:06:26.811+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v10.load_postgres manual__2024-10-15T18:05:59.787168+00:00 [queued]>
+[2024-10-15T18:06:26.820+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v10.load_postgres manual__2024-10-15T18:05:59.787168+00:00 [queued]>
+[2024-10-15T18:06:26.820+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-15T18:06:26.944+0000] {taskinstance.py:2888} INFO - Executing <Task(PythonOperator): load_postgres> on 2024-10-15 18:05:59.787168+00:00
+[2024-10-15T18:06:26.951+0000] {standard_task_runner.py:72} INFO - Started process 2806 to run task
+[2024-10-15T18:06:26.958+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v10', 'load_postgres', 'manual__2024-10-15T18:05:59.787168+00:00', '--job-id', '55', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmp393zroe1']
+[2024-10-15T18:06:26.962+0000] {standard_task_runner.py:105} INFO - Job 55: Subtask load_postgres
+[2024-10-15T18:06:27.008+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v10.load_postgres manual__2024-10-15T18:05:59.787168+00:00 [running]> on host d4bd6f97aac1
+[2024-10-15T18:06:27.088+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v10' AIRFLOW_CTX_TASK_ID='load_postgres' AIRFLOW_CTX_EXECUTION_DATE='2024-10-15T18:05:59.787168+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-15T18:05:59.787168+00:00'
+[2024-10-15T18:06:27.088+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-15T18:06:35.137+0000] {logging_mixin.py:190} INFO - Error while writing to PostgreSQL: Column _c0 not found in schema Some(StructType(StructField(work_year,IntegerType,true),StructField(experience_level,StringType,true),StructField(employment_type,StringType,true),StructField(job_title,StringType,true),StructField(salary,DecimalType(10,2),true),StructField(salary_currency,StringType,true),StructField(salary_in_usd,DecimalType(10,2),true),StructField(employee_residence,StringType,true),StructField(remote_ratio,IntegerType,true),StructField(company_location,StringType,true),StructField(company_size,StringType,true),StructField(load_time,TimestampType,true))).
+[2024-10-15T18:06:35.138+0000] {python.py:240} INFO - Done. Returned value was: None
+[2024-10-15T18:06:35.151+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-15T18:06:35.151+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=main_v10, task_id=load_postgres, run_id=manual__2024-10-15T18:05:59.787168+00:00, execution_date=20241015T180559, start_date=20241015T180626, end_date=20241015T180635
+[2024-10-15T18:06:35.207+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-10-15T18:06:35.226+0000] {taskinstance.py:3900} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2024-10-15T18:06:35.227+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

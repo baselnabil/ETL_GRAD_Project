@@ -1,0 +1,88 @@
+[2024-10-15T17:37:23.549+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-15T17:37:23.573+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v09.run_archive_function manual__2024-10-15T17:37:22.206180+00:00 [queued]>
+[2024-10-15T17:37:23.586+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v09.run_archive_function manual__2024-10-15T17:37:22.206180+00:00 [queued]>
+[2024-10-15T17:37:23.586+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-15T17:37:23.770+0000] {taskinstance.py:2888} INFO - Executing <Task(PostgresOperator): run_archive_function> on 2024-10-15 17:37:22.206180+00:00
+[2024-10-15T17:37:23.778+0000] {standard_task_runner.py:72} INFO - Started process 272 to run task
+[2024-10-15T17:37:23.782+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v09', 'run_archive_function', 'manual__2024-10-15T17:37:22.206180+00:00', '--job-id', '6', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmp4eb5qz07']
+[2024-10-15T17:37:23.785+0000] {standard_task_runner.py:105} INFO - Job 6: Subtask run_archive_function
+[2024-10-15T17:37:23.840+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v09.run_archive_function manual__2024-10-15T17:37:22.206180+00:00 [running]> on host d4bd6f97aac1
+[2024-10-15T17:37:23.935+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v09' AIRFLOW_CTX_TASK_ID='run_archive_function' AIRFLOW_CTX_EXECUTION_DATE='2024-10-15T17:37:22.206180+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-15T17:37:22.206180+00:00'
+[2024-10-15T17:37:23.936+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-15T17:37:23.954+0000] {sql.py:274} INFO - Executing: SELECT archive_old_data();
+[2024-10-15T17:37:23.965+0000] {base.py:84} INFO - Retrieving connection 'postgresid'
+[2024-10-15T17:37:23.979+0000] {base.py:84} INFO - Retrieving connection 'postgresid'
+[2024-10-15T17:37:23.987+0000] {sql.py:418} INFO - Running statement: SELECT archive_old_data();, parameters: None
+[2024-10-15T17:37:23.988+0000] {taskinstance.py:3310} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 767, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 733, in _execute_callable
+    return ExecutionCallableRunner(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/utils/operator_helpers.py", line 252, in run
+    return self.func(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/baseoperator.py", line 406, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/operators/sql.py", line 280, in execute
+    output = hook.run(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/hooks/sql.py", line 392, in run
+    self._run_command(cur, sql_statement, parameters)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/hooks/sql.py", line 423, in _run_command
+    cur.execute(sql_statement)
+psycopg2.errors.UndefinedFunction: function archive_old_data() does not exist
+LINE 1: SELECT archive_old_data();
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+[2024-10-15T17:37:24.003+0000] {taskinstance.py:1225} INFO - Marking task as UP_FOR_RETRY. dag_id=main_v09, task_id=run_archive_function, run_id=manual__2024-10-15T17:37:22.206180+00:00, execution_date=20241015T173722, start_date=20241015T173723, end_date=20241015T173724
+[2024-10-15T17:37:24.022+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-15T17:37:24.023+0000] {standard_task_runner.py:124} ERROR - Failed to execute job 6 for task run_archive_function (function archive_old_data() does not exist
+LINE 1: SELECT archive_old_data();
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+; 272)
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/task/task_runner/standard_task_runner.py", line 117, in _start_by_fork
+    ret = args.func(args, dag=self.dag)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/cli/cli_config.py", line 49, in command
+    return func(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/utils/cli.py", line 115, in wrapper
+    return f(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/cli/commands/task_command.py", line 483, in task_run
+    task_return_code = _run_task_by_selected_method(args, _dag, ti)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/cli/commands/task_command.py", line 256, in _run_task_by_selected_method
+    return _run_raw_task(args, ti)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/cli/commands/task_command.py", line 341, in _run_raw_task
+    return ti._run_raw_task(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/utils/session.py", line 97, in wrapper
+    return func(*args, session=session, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 3004, in _run_raw_task
+    return _run_raw_task(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 273, in _run_raw_task
+    TaskInstance._execute_task_with_callbacks(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 3158, in _execute_task_with_callbacks
+    result = self._execute_task(context, task_orig)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 3182, in _execute_task
+    return _execute_task(self, context, task_orig)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 767, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 733, in _execute_callable
+    return ExecutionCallableRunner(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/utils/operator_helpers.py", line 252, in run
+    return self.func(*args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/baseoperator.py", line 406, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/operators/sql.py", line 280, in execute
+    output = hook.run(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/hooks/sql.py", line 392, in run
+    self._run_command(cur, sql_statement, parameters)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/hooks/sql.py", line 423, in _run_command
+    cur.execute(sql_statement)
+psycopg2.errors.UndefinedFunction: function archive_old_data() does not exist
+LINE 1: SELECT archive_old_data();
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+[2024-10-15T17:37:24.074+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 1
+[2024-10-15T17:37:24.092+0000] {taskinstance.py:3900} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2024-10-15T17:37:24.094+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

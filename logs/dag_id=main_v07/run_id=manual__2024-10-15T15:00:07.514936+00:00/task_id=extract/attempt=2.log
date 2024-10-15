@@ -1,0 +1,22 @@
+[2024-10-15T15:05:09.859+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v07.extract manual__2024-10-15T15:00:07.514936+00:00 [queued]>
+[2024-10-15T15:05:09.867+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v07.extract manual__2024-10-15T15:00:07.514936+00:00 [queued]>
+[2024-10-15T15:05:09.868+0000] {taskinstance.py:1359} INFO - Starting attempt 2 of 6
+[2024-10-15T15:05:09.879+0000] {taskinstance.py:1380} INFO - Executing <Task(PythonOperator): extract> on 2024-10-15 15:00:07.514936+00:00
+[2024-10-15T15:05:09.887+0000] {standard_task_runner.py:57} INFO - Started process 1730 to run task
+[2024-10-15T15:05:09.890+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'main_v07', 'extract', 'manual__2024-10-15T15:00:07.514936+00:00', '--job-id', '40', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmpd_g0sq9u']
+[2024-10-15T15:05:09.893+0000] {standard_task_runner.py:85} INFO - Job 40: Subtask extract
+[2024-10-15T15:05:09.939+0000] {task_command.py:415} INFO - Running <TaskInstance: main_v07.extract manual__2024-10-15T15:00:07.514936+00:00 [running]> on host 86aea83cc069
+[2024-10-15T15:05:10.010+0000] {taskinstance.py:1660} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v07' AIRFLOW_CTX_TASK_ID='extract' AIRFLOW_CTX_EXECUTION_DATE='2024-10-15T15:00:07.514936+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-15T15:00:07.514936+00:00'
+[2024-10-15T15:05:10.013+0000] {taskinstance.py:1935} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/extract/extract.py", line 4, in extract_data
+    from pyspark.sql import SparkSession
+ModuleNotFoundError: No module named 'pyspark'
+[2024-10-15T15:05:10.021+0000] {taskinstance.py:1398} INFO - Marking task as UP_FOR_RETRY. dag_id=main_v07, task_id=extract, execution_date=20241015T150007, start_date=20241015T150509, end_date=20241015T150510
+[2024-10-15T15:05:10.030+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 40 for task extract (No module named 'pyspark'; 1730)
+[2024-10-15T15:05:10.063+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2024-10-15T15:05:10.103+0000] {taskinstance.py:2776} INFO - 0 downstream tasks scheduled from follow-on schedule check

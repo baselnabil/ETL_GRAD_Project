@@ -1,11 +1,10 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType
-
 
 
 def extract_data():
     from pyspark.sql import SparkSession
     from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+    import pandas as pd 
+
     schema = StructType([
     StructField("work_year", IntegerType(), True),
     StructField("experience_level", StringType(), True),
@@ -56,5 +55,5 @@ def extract_data():
 )
     df_parquet= spark.read.parquet('/opt/airflow/data/raw/data.parquet')    
     merged_dataset = data1.union(data2).union(data3).union(df_parquet)
-    merged_dataset.coalesce(1).write.parquet("/opt/airflow/data/processed", mode='overwrite')
+    merged_dataset.toPandas().to_csv("/opt/airflow/data/processed/processed.csv", sep=',',header=True,index=False)
 

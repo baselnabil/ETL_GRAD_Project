@@ -1,0 +1,43 @@
+[2024-10-15T17:41:10.552+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-15T17:41:10.571+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v09.create_archive_function manual__2024-10-15T17:41:07.322116+00:00 [queued]>
+[2024-10-15T17:41:10.580+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v09.create_archive_function manual__2024-10-15T17:41:07.322116+00:00 [queued]>
+[2024-10-15T17:41:10.580+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-15T17:41:10.717+0000] {taskinstance.py:2888} INFO - Executing <Task(PostgresOperator): create_archive_function> on 2024-10-15 17:41:07.322116+00:00
+[2024-10-15T17:41:10.723+0000] {standard_task_runner.py:72} INFO - Started process 403 to run task
+[2024-10-15T17:41:10.725+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v09', 'create_archive_function', 'manual__2024-10-15T17:41:07.322116+00:00', '--job-id', '19', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmp3sk0b93t']
+[2024-10-15T17:41:10.728+0000] {standard_task_runner.py:105} INFO - Job 19: Subtask create_archive_function
+[2024-10-15T17:41:10.777+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v09.create_archive_function manual__2024-10-15T17:41:07.322116+00:00 [running]> on host d4bd6f97aac1
+[2024-10-15T17:41:10.847+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v09' AIRFLOW_CTX_TASK_ID='create_archive_function' AIRFLOW_CTX_EXECUTION_DATE='2024-10-15T17:41:07.322116+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-15T17:41:07.322116+00:00'
+[2024-10-15T17:41:10.848+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-15T17:41:10.859+0000] {sql.py:274} INFO - Executing: 
+    CREATE OR REPLACE FUNCTION archive_old_data()
+    RETURNS void AS $$
+    BEGIN
+        INSERT INTO archived_staging_data
+        SELECT * FROM staging_data 
+        WHERE load_time < current_timestamp - INTERVAL '1 hour';
+
+        DELETE FROM staging_data
+        WHERE load_time < current_timestamp - INTERVAL '1 hour';
+    END;
+    $$ LANGUAGE PLPGSQL;
+    
+[2024-10-15T17:41:10.866+0000] {base.py:84} INFO - Retrieving connection 'postgresid'
+[2024-10-15T17:41:10.875+0000] {base.py:84} INFO - Retrieving connection 'postgresid'
+[2024-10-15T17:41:10.879+0000] {sql.py:418} INFO - Running statement: 
+    CREATE OR REPLACE FUNCTION archive_old_data()
+    RETURNS void AS $$
+    BEGIN
+        INSERT INTO archived_staging_data
+        SELECT * FROM staging_data 
+        WHERE load_time < current_timestamp - INTERVAL '1 hour';
+
+        DELETE FROM staging_data
+        WHERE load_time < current_timestamp - INTERVAL '1 hour';
+    END;
+    $$ LANGUAGE PLPGSQL;
+    , parameters: None
+[2024-10-15T17:41:10.889+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-15T17:41:10.889+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=main_v09, task_id=create_archive_function, run_id=manual__2024-10-15T17:41:07.322116+00:00, execution_date=20241015T174107, start_date=20241015T174110, end_date=20241015T174110
+[2024-10-15T17:41:10.938+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-10-15T17:41:10.957+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

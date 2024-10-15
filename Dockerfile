@@ -26,7 +26,6 @@ RUN curl -L https://jdbc.postgresql.org/download/postgresql-42.6.0.jar -o /tmp/p
     mv /tmp/postgresql-42.6.0.jar /opt/spark/jars/postgresql-42.6.0.jar
 
 USER airflow
-ENV PATH="$PATH:/home/basel/main/Grad_proj"
 
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r /requirements.txt

@@ -2,11 +2,6 @@
 -- Date Dimension
 
 use main;
-CREATE TABLE date_dim (
-    date_id INT AUTO_INCREMENT PRIMARY KEY,
-    work_year INT NOT NULL);
- SELECT * from job_dim;
- 
 -- Job Dimension
 CREATE TABLE job_dim (
     job_id INT AUTO_INCREMENT PRIMARY KEY,

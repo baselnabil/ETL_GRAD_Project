@@ -1,0 +1,50 @@
+[2024-10-15T16:54:39.653+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-15T16:54:39.672+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v07.create_schema manual__2024-10-15T16:54:39.072834+00:00 [queued]>
+[2024-10-15T16:54:39.682+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v07.create_schema manual__2024-10-15T16:54:39.072834+00:00 [queued]>
+[2024-10-15T16:54:39.682+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-15T16:54:39.804+0000] {taskinstance.py:2888} INFO - Executing <Task(PostgresOperator): create_schema> on 2024-10-15 16:54:39.072834+00:00
+[2024-10-15T16:54:39.810+0000] {standard_task_runner.py:72} INFO - Started process 667 to run task
+[2024-10-15T16:54:39.817+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v07', 'create_schema', 'manual__2024-10-15T16:54:39.072834+00:00', '--job-id', '77', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmp4zenwqwr']
+[2024-10-15T16:54:39.821+0000] {standard_task_runner.py:105} INFO - Job 77: Subtask create_schema
+[2024-10-15T16:54:39.864+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v07.create_schema manual__2024-10-15T16:54:39.072834+00:00 [running]> on host bdd8237acab7
+[2024-10-15T16:54:39.952+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v07' AIRFLOW_CTX_TASK_ID='create_schema' AIRFLOW_CTX_EXECUTION_DATE='2024-10-15T16:54:39.072834+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-15T16:54:39.072834+00:00'
+[2024-10-15T16:54:39.952+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-15T16:54:39.962+0000] {sql.py:274} INFO - Executing: 
+    CREATE TABLE IF NOT EXISTS staging_data (
+        work_year INT,
+        experience_level VARCHAR(50),
+        employment_type VARCHAR(50),
+        job_title VARCHAR(100),
+        salary DECIMAL(10, 2),
+        salary_currency VARCHAR(10),
+        salary_in_usd DECIMAL(10, 2),
+        employee_residence VARCHAR(100),
+        remote_ratio INT CHECK (remote_ratio IN (0, 50, 100)),
+        company_location VARCHAR(100),
+        company_size CHAR(1) CHECK (company_size IN ('S', 'M', 'L')),
+        load_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    
+[2024-10-15T16:54:39.970+0000] {base.py:84} INFO - Retrieving connection 'postgresid'
+[2024-10-15T16:54:39.980+0000] {base.py:84} INFO - Retrieving connection 'postgresid'
+[2024-10-15T16:54:39.985+0000] {sql.py:418} INFO - Running statement: 
+    CREATE TABLE IF NOT EXISTS staging_data (
+        work_year INT,
+        experience_level VARCHAR(50),
+        employment_type VARCHAR(50),
+        job_title VARCHAR(100),
+        salary DECIMAL(10, 2),
+        salary_currency VARCHAR(10),
+        salary_in_usd DECIMAL(10, 2),
+        employee_residence VARCHAR(100),
+        remote_ratio INT CHECK (remote_ratio IN (0, 50, 100)),
+        company_location VARCHAR(100),
+        company_size CHAR(1) CHECK (company_size IN ('S', 'M', 'L')),
+        load_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    , parameters: None
+[2024-10-15T16:54:40.001+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-15T16:54:40.001+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=main_v07, task_id=create_schema, run_id=manual__2024-10-15T16:54:39.072834+00:00, execution_date=20241015T165439, start_date=20241015T165439, end_date=20241015T165440
+[2024-10-15T16:54:40.025+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-10-15T16:54:40.046+0000] {taskinstance.py:3900} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2024-10-15T16:54:40.047+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

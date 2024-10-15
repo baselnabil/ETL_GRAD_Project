@@ -1,11 +1,8 @@
-# Data processing and analysis libraries
 pyspark
 pandas
 
-# Additional dependencies
 apache-airflow
 apache-airflow-providers-apache-spark
-
+apache-airflow-providers-mysql
 apache-airflow-providers-openlineage>=1.8.0
 
-jobspy-python

@@ -1,0 +1,30 @@
+[2024-10-15T15:37:38.361+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-15T15:37:38.383+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v07.transform manual__2024-10-15T15:37:26.034858+00:00 [queued]>
+[2024-10-15T15:37:38.392+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v07.transform manual__2024-10-15T15:37:26.034858+00:00 [queued]>
+[2024-10-15T15:37:38.392+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-15T15:37:38.404+0000] {taskinstance.py:2888} INFO - Executing <Task(PythonOperator): transform> on 2024-10-15 15:37:26.034858+00:00
+[2024-10-15T15:37:38.409+0000] {standard_task_runner.py:72} INFO - Started process 5576 to run task
+[2024-10-15T15:37:38.417+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v07', 'transform', 'manual__2024-10-15T15:37:26.034858+00:00', '--job-id', '72', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmpgbts1wvo']
+[2024-10-15T15:37:38.421+0000] {standard_task_runner.py:105} INFO - Job 72: Subtask transform
+[2024-10-15T15:37:38.589+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v07.transform manual__2024-10-15T15:37:26.034858+00:00 [running]> on host aa41fc5ff3d5
+[2024-10-15T15:37:38.663+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v07' AIRFLOW_CTX_TASK_ID='transform' AIRFLOW_CTX_EXECUTION_DATE='2024-10-15T15:37:26.034858+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-15T15:37:26.034858+00:00'
+[2024-10-15T15:37:38.663+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-15T15:37:46.800+0000] {logging_mixin.py:190} INFO - root
+ |-- work_year: double (nullable = true)
+ |-- experience_level: string (nullable = true)
+ |-- employment_type: string (nullable = true)
+ |-- job_title: string (nullable = true)
+ |-- salary: double (nullable = true)
+ |-- salary_currency: string (nullable = true)
+ |-- salary_in_usd: double (nullable = true)
+ |-- employee_residence: string (nullable = true)
+ |-- remote_ratio: string (nullable = true)
+ |-- company_location: string (nullable = true)
+ |-- company_size: string (nullable = true)
+[2024-10-15T15:37:47.160+0000] {logging_mixin.py:190} INFO - StructType([StructField('work_year', IntegerType(), True), StructField('experience_level', StringType(), True), StructField('employment_type', StringType(), True), StructField('job_title', StringType(), True), StructField('salary', DoubleType(), True), StructField('salary_currency', StringType(), True), StructField('salary_in_usd', DoubleType(), True), StructField('employee_residence', StringType(), True), StructField('remote_ratio', IntegerType(), True), StructField('company_location', StringType(), True), StructField('company_size', StringType(), True)])
+[2024-10-15T15:37:48.326+0000] {python.py:240} INFO - Done. Returned value was: None
+[2024-10-15T15:37:48.337+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-15T15:37:48.337+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=main_v07, task_id=transform, run_id=manual__2024-10-15T15:37:26.034858+00:00, execution_date=20241015T153726, start_date=20241015T153738, end_date=20241015T153748
+[2024-10-15T15:37:48.381+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-10-15T15:37:48.397+0000] {taskinstance.py:3900} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2024-10-15T15:37:48.398+0000] {local_task_job_runner.py:245} INFO - ::endgroup::
