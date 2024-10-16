@@ -1,0 +1,48 @@
+---
+title: Airflow DAG Overview
+description: Overview of the Airflow DAG used for orchestrating the ETL pipeline with PostgreSQL and MariaDB as databases.
+---
+
+In this project, Airflow is used to orchestrate the ETL pipeline, which extracts, transforms, and loads data into PostgreSQL and MariaDB databases. The DAG (Directed Acyclic Graph) defines the workflow, ensuring that tasks like data extraction, transformation, and loading are performed in the correct order with dependencies between them properly managed.
+
+# Why Airflow?
+
+Airflow is chosen for its ability to:
+
+- **Task Orchestration**: It manages complex ETL pipelines with task dependencies, allowing us to define clear workflows.
+- **Task Scheduling and Retry Mechanism**: Airflow supports automatic scheduling, retries, and error handling, which makes it highly reliable for managing production pipelines.
+- **Interfacing with Multiple Databases**: This pipeline interacts with both PostgreSQL (as a staging database) and MariaDB (as an OLAP database), and Airflow offers built-in support for both through its operators.
+
+---
+
+# Overview of the ETL Pipeline
+
+The ETL pipeline is broken into several key stages:
+
+1. **Extract**: Data is extracted from various sources using Python's `extract_data` function, which is triggered by the Airflow PythonOperator.
+2. **Transform**: Once extracted, the data is transformed using the `transform_data` function. This stage ensures that the data is clean and ready for loading.
+3. **Load**:
+   - **PostgreSQL Staging**: The transformed data is first loaded into a staging table in PostgreSQL. This staging area allows for temporary storage and further manipulation if necessary.
+   - **MariaDB OLAP**: After staging, the data is loaded into dimension and fact tables in MariaDB, where it can be used for analytical purposes.
+
+---
+
+### Key Components
+
+- **PostgreSQL Staging**: PostgreSQL serves as a staging area where data is initially loaded, transformed, and archived.
+- **MariaDB OLAP**: MariaDB is used for OLAP (Online Analytical Processing) tasks, where the data is loaded into dimension and fact tables for analysis.
+- **Archiving and Optimization**: Old data is archived from the PostgreSQL staging table into an archive table. Both PostgreSQL and MariaDB are optimized for performance through the use of indexes and system parameter tuning.
+  
+---
+
+### DAG Dependencies
+
+The DAG is designed with dependencies to ensure that the stages happen in the correct order. For example:
+- Data extraction must be completed before transformation.
+- The fact tables in MariaDB can only be loaded after the dimensions are created.
+
+Each task is set to retry up to five times if it fails, ensuring robustness in the event of temporary failures.
+
+---
+
+By leveraging Airflow for ETL orchestration, we ensure that the entire data pipeline from extraction to loading is efficient, scalable, and maintainable. This structure allows us to manage the flow of data seamlessly between multiple databases while providing the necessary error handling and optimization.

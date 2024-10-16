@@ -53,6 +53,9 @@ importers:
       theme-change:
         specifier: ^2.5.0
         version: 2.5.0
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@heroicons/react':
         specifier: ^2.1.5

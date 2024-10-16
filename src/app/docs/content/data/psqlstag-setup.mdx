@@ -1,0 +1,102 @@
+---
+title: PostgreSQL Staging Setup
+description: Optimizing PostgreSQL as a staging database for the ETL pipeline.
+---
+
+In this section, we outline how PostgreSQL is configured and used as a staging database in our ETL pipeline. The goal of staging is to prepare the data efficiently for further transformations and loading into other systems like MariaDB for analytical processing. This setup ensures optimal performance by configuring PostgreSQL's parameters and creating a staging table for temporary data storage.
+
+<br />
+
+# PostgreSQL Configuration
+
+## Writing Optimization
+
+To optimize PostgreSQL for handling large amounts of write operations during data staging, we adjust certain configuration settings. These changes aim to improve checkpoint handling and memory allocation for write-ahead logs (WAL).
+
+
+```sql
+-- SQL code for writing optimization
+ALTER SYSTEM SET wal_buffers = '16MB';
+ALTER SYSTEM SET checkpoint_completion_target = 0.9;
+```
+
+1. **`wal_buffers`**: The WAL buffers are increased to 16MB. WAL buffers store data before it’s written to disk, and increasing this value improves write performance, especially for bulk inserts.
+2. **`checkpoint_completion_target`**: This parameter is set to 0.9, which aims to spread checkpoint I/O more evenly throughout the checkpoint cycle. By doing this, we reduce the performance hit that happens when PostgreSQL writes a large amount of data to disk during checkpoints.
+
+<hr />
+<br />
+
+# Staging Data Table
+
+The `staging_data` table is created to temporarily hold the data before it is further processed and loaded into the OLAP system (MariaDB). This table includes fields for employee, job, and salary information, along with constraints for data integrity.
+
+
+```sql
+CREATE TABLE staging_data (
+    work_year INT,
+    experience_level VARCHAR(50),
+    employment_type VARCHAR(50),
+    job_title VARCHAR(100),
+    salary DECIMAL(10, 2),
+    salary_currency VARCHAR(10),
+    salary_in_usd DECIMAL(10, 2),
+    employee_residence VARCHAR(100),
+    remote_ratio INT CHECK (remote_ratio IN (0, 50, 100)),
+    company_location VARCHAR(100),
+    company_size CHAR(1) CHECK (company_size IN ('S', 'M', 'L')),
+    load_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Table Breakdown
+
+1. **Data Types**: The table defines various columns, such as `work_year` (INT), `salary` (DECIMAL), and `job_title` (VARCHAR). These data types ensure that the information is stored with the necessary precision and format.
+2. **Constraints**:
+   - **`remote_ratio`**: This field is limited to values of 0, 50, or 100, which represent different levels of remote work.
+   - **`company_size`**: This is limited to 'S', 'M', or 'L', representing small, medium, and large companies.
+3. **`load_time`**: A timestamp is added to track when the data was loaded into the staging table, using PostgreSQL’s time zone support.
+
+<hr />
+<br />
+
+### Altering Table Columns
+
+Once the staging table is created, the columns are altered to ensure that they conform to the correct data types. This helps guarantee data integrity before further processing.
+
+```sql
+ALTER TABLE staging_data
+ALTER COLUMN work_year TYPE INT USING work_year::INT,
+ALTER COLUMN experience_level TYPE VARCHAR(50) USING experience_level::VARCHAR(50),
+ALTER COLUMN employment_type TYPE VARCHAR(50) USING employment_type::VARCHAR(50),
+ALTER COLUMN job_title TYPE VARCHAR(100) USING job_title::VARCHAR(100),
+ALTER COLUMN salary TYPE DECIMAL(10, 2) USING salary::DECIMAL(10, 2),
+ALTER COLUMN salary_currency TYPE VARCHAR(10) USING salary_currency::VARCHAR(10),
+ALTER COLUMN salary_in_usd TYPE DECIMAL(10, 2) USING salary_in_usd::DECIMAL(10, 2),
+ALTER COLUMN employee_residence TYPE VARCHAR(100) USING employee_residence::VARCHAR(100),
+ALTER COLUMN remote_ratio TYPE INT USING remote_ratio::INT,
+ALTER COLUMN company_location TYPE VARCHAR(100) USING company_location::VARCHAR(100),
+ALTER COLUMN company_size TYPE CHAR(1) USING company_size::CHAR(1),
+ALTER COLUMN load_time TYPE TIMESTAMP USING load_time::TIMESTAMP;
+```
+
+This script ensures that any potential mismatches between the column types and the incoming data are corrected by casting the columns to the correct types.
+
+<hr />
+<br />
+
+### Data Verification
+
+After the staging table has been populated and the columns adjusted, you can verify the data by selecting all the records from the table.
+
+
+```sql
+SELECT * FROM staging_data;
+```
+
+This query retrieves all records from the `staging_data` table, allowing you to review the staged data before further ETL processes.
+
+<br />
+
+## Conclusion
+
+PostgreSQL serves as an efficient staging database in our ETL pipeline, providing robust support for data integrity and performance. By optimizing its settings and defining a structured staging table, we ensure that the incoming data is properly staged and validated before being moved to its final destination for analysis.

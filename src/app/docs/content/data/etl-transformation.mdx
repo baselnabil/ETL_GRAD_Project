@@ -2,6 +2,7 @@
 title: ETL - Transformation
 description: Overview of the data transformation process in GradSync
 ---
+# Code Overview
 
 After extracting data from various sources, GradSync performs a series of transformation steps to ensure the data is clean, consistent, and ready for analysis. The transformation process is crucial for converting raw data into a structured format that can be easily analyzed. Here are the key steps involved in the data transformation process:
 
@@ -35,8 +36,98 @@ Schema inference and validation are critical steps to ensure that the data confo
 - **Schema Validation**: We validate the inferred schema against predefined schemas to ensure that the data meets the required standards. This involves checking data types, column names, and constraints.
 - **Error Handling**: During schema validation, we identify and handle errors (e.g., incorrect data types, missing columns) by applying appropriate transformations or flagging the data for further review.
 
+<hr />
 <br />
 
-## Conclusion
+# Code Explanation
 
-The transformation process in GradSync involves data cleaning, merging data into a single DataFrame, and schema inference and validation. By leveraging PySpark's powerful tools, we ensure that the data is clean, consistent, and ready for analysis. These transformation steps are crucial for converting raw data into a structured format, enabling us to deliver accurate and reliable insights. Our ETL pipeline's transformation phase plays a vital role in maintaining data quality and integrity.
+### Initializing the Spark Session
+
+The function begins by setting up a PySpark session, which is necessary for processing data with PySpark's distributed framework.
+
+<hr />
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame
+from pyspark.sql.functions: import col
+from pyspark.sql.types import IntegerType, DoubleType, StringType
+import pandas as pd
+
+spark = SparkSession.builder \
+    .appName('transformer') \
+    .getOrCreate()
+```
+
+1. **Spark Session**: A PySpark session is initialized using `SparkSession.builder`. This is the entry point for working with DataFrames in PySpark.
+2. **Imports**: We import relevant PySpark modules such as `SparkSession`, `col` for column manipulation, and types like `IntegerType`, `DoubleType`, and `StringType` for casting the columns.
+
+<hr />
+
+### Reading the Data
+
+Next, the CSV file is read into a DataFrame. The data comes from a preprocessed CSV file located in the `/opt/airflow/data/processed/` directory.
+
+<hr />
+
+```python
+df = spark.read.csv('/opt/airflow/data/processed/processed.csv', header=True, inferSchema=True)
+df.printSchema()
+```
+
+1. **Reading the CSV file**: The CSV is read with headers and automatic schema inference (`inferSchema=True`), allowing PySpark to detect column data types.
+2. **Schema Print**: The initial schema of the DataFrame is printed for reference. This helps in confirming the structure before further transformations.
+
+<hr />
+
+### Defining and Transforming Column Types
+
+We define a dictionary that maps specific column names to the desired data types and then iterate over each column to apply these transformations. Null values in the specified columns are filtered out to ensure data consistency.
+
+<hr />
+
+```python
+column_types = {
+    'work_year': IntegerType(),
+    'experience_level': StringType(),
+    'employment_type': StringType(),
+    'job_title': StringType(),
+    'salary': DoubleType(),
+    'salary_currency': StringType(),
+    'salary_in_usd': DoubleType(),
+    'employee_residence': StringType(),
+    'remote_ratio': IntegerType(),
+    'company_location': StringType(),
+    'company_size': StringType()
+}
+
+for column_name, data_type in column_types.items():
+    if column_name in df.columns:
+        df = df.withColumn(column_name, col(column_name).cast(data_type))
+        df = df.filter(col(column_name).isNotNull())
+```
+
+1. **Column Type Dictionary**: We create a dictionary `column_types` where the keys are column names and the values are the target data types (e.g., `IntegerType`, `StringType`, `DoubleType`).
+2. **Casting Columns**: Using a `for` loop, the function checks if each column exists in the DataFrame and casts it to the appropriate type with `col(column_name).cast(data_type)`.
+3. **Filtering Null Values**: The `.filter(col(column_name).isNotNull())` ensures that the column has no null values, filtering out any rows where the value is missing.
+
+<hr />
+
+### Exporting the Data
+
+Once the transformations are complete, the DataFrame is converted to a Pandas DataFrame and saved as a CSV file.
+
+<hr />
+
+```python
+df.toPandas().to_csv('/opt/airflow/data/final/final.csv', sep=',', header=True, index=False)
+```
+
+1. **Conversion to Pandas**: The transformed PySpark DataFrame is converted to a Pandas DataFrame using `.toPandas()`. This is useful for exporting the data into a CSV file.
+2. **Saving to CSV**: The final DataFrame is saved as a CSV file at `/opt/airflow/data/final/final.csv` with a comma separator. The `header=True` ensures that the column names are included, and `index=False` omits the index from the output file.
+
+---
+
+# Conclusion
+
+This function performs essential data transformation steps: reading raw data, casting columns to the correct data types, and filtering out null values. By leveraging PySpark, it efficiently handles large datasets, ensuring that the final output is clean and ready for analysis. Finally, the data is exported back into a CSV file for further use.

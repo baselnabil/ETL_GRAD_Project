@@ -1,0 +1,91 @@
+---
+title: Machine Learning Code Explanation
+description: Step-by-step breakdown of the machine learning model code used to predict salaries based on job features.
+---
+
+# Code Overview
+
+### Introduction to Model Selection
+In this section, we break down the code behind the implementation of the salary prediction model. A Random Forest Regressor is used due to its flexibility and ability to handle both numerical and categorical variables. This model is particularly effective for datasets with complex feature interactions, like the one we are working with, which includes job titles, experience levels, employment types, and other salary-related factors.
+
+The following key elements are covered:
+
+- **Data Preprocessing**: Handling missing values and encoding categorical features.
+- **Model Training**: Using the Random Forest Regressor for salary prediction.
+- **Model Evaluation**: Assessing the model performance using R-squared and Mean Squared Error (MSE).
+
+---
+
+# Code Explanation
+
+## 1. Data Preprocessing
+
+```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import OneHotEncoder
+
+# Load the data
+data = pd.read_csv('data_engineer_salaries.csv')
+
+# Handling missing values
+data = data.dropna()
+
+# One-hot encoding categorical variables
+categorical_columns = ['experience_level', 'employment_type', 'job_title', 'company_location']
+encoder = OneHotEncoder(sparse=False)
+encoded_data = encoder.fit_transform(data[categorical_columns])
+
+# Creating the feature matrix (X) and target variable (y)
+X = pd.concat([pd.DataFrame(encoded_data), data[['work_year', 'salary_in_usd']]], axis=1)
+y = data['salary_in_usd']
+
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+
+### Explanation:
+
+- **Data Loading and Handling**: We start by loading the CSV file containing salary data and dropping any rows with missing values to ensure clean input.
+- **Categorical Encoding**: We apply one-hot encoding to categorical columns like `experience_level`, `employment_type`, `job_title`, and `company_location` to convert them into a format suitable for model training.
+- **Feature Matrix and Target Variable**: The encoded categorical data is combined with numerical features like `work_year` and `salary_in_usd` to form the feature matrix (X), with `salary_in_usd` as the target variable (y).
+- **Train-Test Split**: The dataset is split into training and test sets using an 80/20 split to evaluate the model’s performance.
+<hr />
+<br />
+
+## 2. Model Training and Evaluation
+
+```python
+# Initialize the Random Forest Regressor
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+# Train the model
+rf_model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = rf_model.predict(X_test)
+
+# Evaluate the model's performance
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f"Mean Squared Error: {mse}")
+print(f"R-squared: {r2}")
+```
+
+### Explanation:
+
+- **Model Initialization**: We initialize the `RandomForestRegressor` with 100 trees (n_estimators=100). Random Forest is chosen for its ability to model complex relationships and handle various feature types without heavy preprocessing.
+- **Model Training**: The model is trained using the `fit()` method, where it learns from the training set (X_train, y_train) to predict salary values.
+- **Predictions**: Once trained, the model generates predictions for the test set (X_test), which are then compared against the actual values (y_test).
+- **Model Evaluation**: Two evaluation metrics are used:
+  - **Mean Squared Error (MSE)**: Measures the average squared difference between predicted and actual values. Lower values indicate better model performance.
+  - **R-squared (R²)**: Represents the proportion of variance in the target variable (salary_in_usd) that is predictable from the feature set. Values closer to 1 indicate a better fit.
+
+<hr />
+
+## 3. Conclusion
+
+The **Random Forest Regressor** was chosen for its robustness and ability to handle complex datasets like the salary data, which includes both categorical and numerical features. By carefully preprocessing the data and training the model, we were able to predict salaries with a reasonable degree of accuracy. This approach can be further improved by fine-tuning hyperparameters or experimenting with different models, but the current setup provides a solid foundation for salary prediction.

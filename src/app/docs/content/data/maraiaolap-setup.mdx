@@ -1,0 +1,245 @@
+---
+title: MariaDB OLAP Setup
+description: Setting up MariaDB as an OLAP database for the ETL pipeline.
+---
+
+In this section, we discuss the setup of MariaDB as the OLAP (Online Analytical Processing) database. This setup focuses on the creation of a star schema with dimension and fact tables, along with optimization techniques to support analytical queries efficiently.
+
+<br />
+
+# MariaDB OLAP Schema
+
+### Big Table Creation
+
+The `big_table` is created as a temporary staging table that holds the incoming data before being split into dimensions and fact tables. Once the data is loaded into respective dimensions and facts, the table can be dropped.
+
+```sql
+USE main;
+
+CREATE TABLE big_table (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `work_year` INT,
+    `experience_level` VARCHAR(50),
+    `employment_type` VARCHAR(50),
+    `job_title` VARCHAR(100),
+    `salary` DECIMAL(10, 2),
+    `salary_currency` VARCHAR(10),
+    `salary_in_usd` DECIMAL(10, 2),
+    `employee_residence` VARCHAR(100),
+    `remote_ratio` INT CHECK (`remote_ratio` IN (0, 50, 100)),
+    `company_location` VARCHAR(100),
+    `company_size` CHAR(1) CHECK (`company_size` IN ('S', 'M', 'L'))
+);
+
+-- Drop big table after data processing
+DROP TABLE big_table;
+```
+
+<hr />
+<br />
+
+# Dimension Tables
+
+The dimensions capture the core entities related to jobs, employees, companies, and currencies. These tables are created to normalize data for efficient querying in the fact table.
+
+### Job Dimension
+
+The `job_dim` table holds the details about jobs, including title, experience level, and employment type.
+
+```sql
+CREATE TABLE job_dim (
+    job_id INT AUTO_INCREMENT PRIMARY KEY,
+    job_title VARCHAR(100) NOT NULL,
+    experience_level VARCHAR(50) NOT NULL,
+    employment_type VARCHAR(50) NOT NULL
+);
+INSERT INTO job_dim (job_title, experience_level, employment_type) VALUES ('Data Scientist', 'SE', 'FT');
+```
+
+### Employee Dimension
+
+This table stores the employees' residence details.
+
+```sql
+CREATE TABLE employee_dim (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_residence VARCHAR(100) NOT NULL
+);
+```
+
+### Company Dimension
+
+The `company_dim` holds information about the companies, including their location, size, and remote work ratio.
+
+```sql
+CREATE TABLE company_dim (
+    company_id INT AUTO_INCREMENT PRIMARY KEY,
+    company_location VARCHAR(100) NOT NULL,
+    company_size VARCHAR(20) NOT NULL,
+    remote_ratio INT NOT NULL
+);
+```
+
+### Currency Dimension
+
+The `currency_dim` table stores the currency used for salaries.
+
+```sql
+CREATE TABLE currency_dim (
+    currency_id INT AUTO_INCREMENT PRIMARY KEY,
+    salary_currency CHAR(10) NOT NULL
+);
+```
+
+<hr />
+<br />
+
+# Fact Table
+
+The `jobs_fact` table stores the actual transactional data that links to the dimension tables and captures salary details.
+
+```sql
+CREATE TABLE jobs_fact (
+    fact_id INT AUTO_INCREMENT PRIMARY KEY,
+    job_id INT,
+    employee_id INT,
+    company_id INT,
+    currency_id INT,
+    salary DECIMAL(15, 2) NOT NULL,
+    salary_in_usd DECIMAL(15, 2) NOT NULL
+);
+
+-- Adding foreign key constraints to the fact table
+ALTER TABLE jobs_fact
+ADD CONSTRAINT fk FOREIGN KEY (job_id) REFERENCES job_dim(job_id);
+ALTER TABLE jobs_fact
+ADD CONSTRAINT fk2 FOREIGN KEY (company_id) REFERENCES company_dim(company_id);
+ALTER TABLE jobs_fact
+ADD CONSTRAINT fk3 FOREIGN KEY (currency_id) REFERENCES currency_dim(currency_id);
+ALTER TABLE jobs_fact
+ADD CONSTRAINT fk4 FOREIGN KEY (employee_id) REFERENCES employee_dim(employee_id);
+```
+
+<hr />
+<br />
+
+# Loading Data into Dimensions and Fact Table
+
+The following procedures are designed to load data from the `big_table` into the corresponding dimension tables and the fact table. This process ensures that data is properly normalized before being used for analytical queries.
+
+### Loading Dimension Tables
+
+```sql
+-- Procedure to load data into job_dim
+CREATE PROCEDURE load_into_job_dim()
+BEGIN
+    INSERT IGNORE INTO job_dim (job_title, experience_level, employment_type)
+    SELECT job_title, experience_level, employment_type
+    FROM big_table;
+END;
+
+-- Procedure to load data into employee_dim
+CREATE PROCEDURE load_into_employee_dim()
+BEGIN
+    INSERT IGNORE INTO employee_dim (employee_residence)
+    SELECT employee_residence
+    FROM big_table;
+END;
+
+-- Procedure to load data into company_dim
+CREATE PROCEDURE load_into_company_dim()
+BEGIN
+    INSERT IGNORE INTO company_dim (company_location, company_size, remote_ratio)
+    SELECT company_location, company_size, remote_ratio
+    FROM big_table;
+END;
+
+-- Procedure to load data into currency_dim
+CREATE PROCEDURE load_into_currency_dim()
+BEGIN
+    INSERT IGNORE INTO currency_dim (salary_currency)
+    SELECT salary_currency
+    FROM big_table;
+END;
+```
+
+### Loading the Fact Table
+
+Once the dimension tables are populated, the fact table is loaded by joining the dimension tables on their respective IDs.
+
+```sql
+DELIMITER //
+
+CREATE PROCEDURE load_fact()
+BEGIN
+    INSERT INTO jobs_fact (
+        job_id,
+        employee_id,
+        company_id,
+        currency_id,
+        salary,
+        salary_in_usd
+    )SELECT 
+        j.job_id,
+        e.employee_id,
+        c.company_id,
+        cu.currency_id,
+        b.salary,
+        b.salary_in_usd
+    FROM big_table b
+    JOIN job_dim j ON j.job_id = b.id
+    JOIN employee_dim e ON e.employee_id = b.id
+    JOIN company_dim c ON c.company_id = b.id
+    JOIN currency_dim cu ON cu.currency_id = b.id;
+END //
+
+DELIMITER ;
+```
+
+<hr />
+<br />
+
+# Indexing for Performance
+
+Indexes are added to the fact table to improve query performance, especially when filtering or joining on dimensions.
+
+```sql
+-- Adding indexes to the fact table
+CREATE INDEX idx_jobs_fact_date ON jobs_fact(date_id);
+CREATE INDEX idx_jobs_fact_job ON jobs_fact(job_id);
+CREATE INDEX idx_jobs_fact_employee ON jobs_fact(employee_id);
+CREATE INDEX idx_jobs_fact_company ON jobs_fact(company_id);
+CREATE INDEX idx_jobs_fact_currency ON jobs_fact(currency_id);
+```
+
+<hr />
+<br />
+
+# ETL Process
+
+The entire ETL process is orchestrated through the `run_etl` procedure, which calls the individual procedures for loading dimension and fact tables.
+
+```sql
+-- Main procedure to run the ETL process
+CREATE PROCEDURE run_etl()
+BEGIN
+    -- Load dimension tables
+    CALL load_into_job_dim();
+    CALL load_into_employee_dim();
+    CALL load_into_company_dim();
+    CALL load_into_currency_dim();
+    
+    -- Load fact table
+    CALL load_fact();
+END;
+
+CALL run_etl();
+```
+
+By running this ETL procedure, data is loaded from the `big_table` into the corresponding OLAP schema with dimension and fact tables, making it ready for analysis.
+<hr />
+<br />
+
+# Conclusion
+
+MariaDB serves as the OLAP database in this setup, storing normalized data in a star schema for efficient querying and reporting. The ETL procedures ensure that the data is cleanly loaded into dimension and fact tables, and indexes are applied to improve query performance.

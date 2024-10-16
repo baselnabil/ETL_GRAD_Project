@@ -2,108 +2,12 @@
 title: ETL - Loading
 description: Overview of the data loading process in GradSync
 ---
+# Code Overview
 
 The final step in the ETL process is loading the transformed data into the target databases. In GradSync, we utilize two database systems for different purposes: PostgreSQL as a staging database and MariaDB as an OLAP (Online Analytical Processing) database. This dual-database approach ensures efficient data storage, retrieval, and analysis.
 
 <br />
 
-```sql
-use main;
-CREATE TABLE date_dim (
-    date_id INT AUTO_INCREMENT PRIMARY KEY,
-    work_year INT NOT NULL);
- SELECT * from job_dim;
- 
--- Job Dimension
-CREATE TABLE job_dim (
-    job_id INT AUTO_INCREMENT PRIMARY KEY,
-    job_title VARCHAR(100) NOT NULL,
-    experience_level VARCHAR(50) NOT NULL,
-    employment_type VARCHAR(50) NOT NULL
-);
-INSERT into job_dim (job_title, experience_level, employment_type) VALUES ('Data Scientist', 'SE', 'FT');
--- Employee Dimension
-CREATE TABLE employee_dim (
-    employee_id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_residence VARCHAR(100) NOT NULL
-);
-SELECT * FROM employee_dim;
--- Company Dimension
-CREATE TABLE company_dim (
-    company_id INT AUTO_INCREMENT PRIMARY KEY,
-    company_location VARCHAR(100) NOT NULL,
-    company_size VARCHAR(20) NOT NULL,
-    remote_ratio INT NOT NULL
-);
-```
-
-<br />
-
-
-
-```python
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType
-
-
-
-def extract_data():
-    from pyspark.sql import SparkSession
-    from pyspark.sql.types import StructType, StructField, IntegerType, StringType
-    schema = StructType([
-    StructField("work_year", IntegerType(), True),
-    StructField("experience_level", StringType(), True),
-    StructField("employment_type", StringType(), True),
-    StructField("job_title", StringType(), True),
-    StructField("salary", IntegerType(), True),
-    StructField("salary_currency", StringType(), True),
-    StructField("salary_in_usd", IntegerType(), True),
-    StructField("employee_residence", StringType(), True),
-    StructField("remote_ratio", IntegerType(), True),
-    StructField("company_location", StringType(), True),
-    StructField("company_size", StringType(), True)
-])
-    spark=SparkSession.builder \
-        .appName('extractor') \
-        .getOrCreate()
-    
-
-    data1 = spark.read.csv('/opt/airflow/data/raw/salaries_2.csv', header=True, schema=schema)
-    data2 = spark.read.csv('/opt/airflow/data/raw/jobs_in_data.csv', header=True, inferSchema=True)
-    data3 = spark.read.csv('/opt/airflow/data/raw/jobs.csv', header=True, inferSchema=True)
-    data2 = data2.select(
-    "work_year",
-    "experience_level",
-    "employment_type",
-    "job_title",
-    "salary",
-    "salary_currency",
-    "salary_in_usd",
-    "employee_residence",
-    "work_setting",
-    "company_location",
-    "company_size"
-    ).withColumnRenamed("work_setting", "remote_ratio")
-
-    data3 = data3.select(
-    data3["date_posted"].cast(IntegerType()).alias("work_year"),
-    data3["job_level"].alias("experience_level"),
-    data3["job_type"].alias("employment_type"),
-    data3["title"].alias("job_title"),
-    data3["min_amount"].cast(IntegerType()).alias("salary"),
-    data3["currency"].alias("salary_currency"),
-    data3["max_amount"].cast(IntegerType()).alias("salary_in_usd"),
-    data3["location"].alias("employee_residence"),
-    data3["is_remote"].cast(IntegerType()).alias("remote_ratio"),
-    data3["location"].alias("company_location"),
-    data3["company_num_employees"].alias("company_size")
-)
-    df_parquet= spark.read.parquet('/opt/airflow/data/raw/data.parquet')    
-    merged_dataset = data1.union(data2).union(data3).union(df_parquet)
-    merged_dataset.coalesce(1).write.parquet("/opt/airflow/data/processed", mode='overwrite')
-```
-
-<br />
 ### PostgreSQL (Staging Database)
 
 PostgreSQL serves as our staging area for initial data loading. It provides a robust and reliable environment for temporarily storing data before it is moved to the OLAP database. Here are the key aspects of using PostgreSQL as a staging database:
@@ -114,7 +18,7 @@ PostgreSQL serves as our staging area for initial data loading. It provides a ro
 - **Historical Data Archiving**: An archive table is maintained for historical data. This allows us to keep track of changes over time and perform historical analysis.
 
 <br />
-
+<hr />
 ### MariaDB (OLAP Database)
 
 MariaDB is chosen as our OLAP database due to its columnar storage capabilities, which offer several advantages for analytical workloads. Here are the key benefits of using MariaDB as an OLAP database:
@@ -132,9 +36,190 @@ Columnar databases store data by column rather than by row, which is particularl
 - **Efficient Aggregations**: Columnar storage is optimized for aggregations and calculations on specific columns. This makes it ideal for OLAP workloads that involve summarizing large datasets.
 - **Reduced I/O**: By reading only the necessary columns, columnar storage reduces the amount of data read from disk. This improves query performance and reduces I/O bottlenecks.
 - **Data Compression**: Columnar storage achieves better compression ratios by storing similar values together. This reduces storage costs and improves query performance.
-
+<hr />
 <br />
 
-## Conclusion
+# Code Explanation
 
-The loading process in GradSync involves populating data into PostgreSQL as a staging database and MariaDB as an OLAP database. By leveraging the strengths of both databases, we ensure efficient data storage, retrieval, and analysis. PostgreSQL provides a reliable staging area for initial data loading, while MariaDB's columnar storage capabilities enhance the performance of analytical queries. This dual-database approach enables us to deliver accurate and timely insights from our data.
+### PostgreSQL Loader
+
+The `postgresql_loader` function handles loading transformed data from a CSV file into a PostgreSQL staging table. This function also adds a `load_time` column to track when the data was processed.
+
+
+```python
+def postgresql_loader():
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import IntegerType, BooleanType, DateType, StringType, DecimalType, TimestampType, StructType, StructField
+    from pyspark.sql.functions import year, col, to_timestamp
+    import pandas as pd 
+
+    psql_connection_properties = {
+        "user": "airflow",
+        "password": "airflow",
+        "driver": "org.postgresql.Driver"
+    }
+
+    try:
+        spark = SparkSession.builder \
+                .appName('postgresqlloader') \
+                .config('spark.jars','/opt/spark/jars/postgresql-42.6.0.jar') \
+                .getOrCreate()
+```
+
+1. **Spark Session**: The function begins by initializing a Spark session using `SparkSession.builder`. This session is configured to include the PostgreSQL JDBC driver for connecting to PostgreSQL.
+2. **PostgreSQL Connection Properties**: A dictionary `psql_connection_properties` is defined with credentials to connect to the PostgreSQL database.
+
+<hr />
+<br />
+
+### Defining Schema and Reading Data
+
+The function defines the schema to match the structure of the PostgreSQL table and reads the data from a CSV file into a DataFrame.
+
+```python
+# Define the schema to match your PostgreSQL table
+schema = StructType([
+    StructField("work_year", IntegerType(), True),
+    StructField("experience_level", StringType(), True),
+    StructField("employment_type", StringType(), True),
+    StructField("job_title", StringType(), True),
+    StructField("salary", DecimalType(10,2), True),
+    StructField("salary_currency", StringType(), True),
+    StructField("salary_in_usd", DecimalType(10,2), True),
+    StructField("employee_residence", StringType(), True),
+    StructField("remote_ratio", IntegerType(), True),
+    StructField("company_location", StringType(), True),
+    StructField("company_size", StringType(), True)
+])
+
+# Read CSV with the defined schema
+df = spark.read.csv('/opt/airflow/data/final/final.csv', header=True, schema=schema)
+```
+
+1. **Schema Definition**: The schema is defined using `StructType` to ensure the DataFrame matches the PostgreSQL table structure, specifying the data types for each field.
+2. **Reading CSV**: The data is read from a CSV file using the defined schema. This step ensures that the data is structured and ready for loading into PostgreSQL.
+
+<hr />
+<br />
+
+### Adding a Timestamp and Loading Data
+
+The function adds a `load_time` column and writes the DataFrame to the PostgreSQL database.
+
+```python
+# Add load_time column
+df = df.withColumn("load_time", to_timestamp(col("work_year").cast(StringType()), "yyyy"))
+
+try:
+    df.write.jdbc(
+        url="jdbc:postgresql://postgres:5432/airflow",
+        table='public.staging_data',
+        mode='append',
+        properties=psql_connection_properties
+    )
+    print("Data successfully loaded to PostgreSQL")
+except Exception as e:
+    print(f"Error while writing to PostgreSQL: {e}")
+```
+
+1. **Timestamp Column**: A `load_time` column is added to track the year when the data was loaded. This column is derived from the `work_year` field.
+2. **Loading to PostgreSQL**: The data is written to the `staging_data` table in PostgreSQL using the JDBC connector. The `mode='append'` ensures new data is added without overwriting existing records.
+
+<hr />
+<br />
+
+### MariaDB Loader
+
+The `mariadb_loader` function retrieves the staged data from PostgreSQL, creates dimension tables, and loads them into MariaDB.
+
+```python
+def mariadb_loader():
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import IntegerType, BooleanType, DateType, StringType
+    from pyspark.sql.functions import year, col
+    import pandas as pd
+
+    psql_connection_properties = {
+        "user": "airflow",
+        "password": "airflow",
+        "driver": "org.postgresql.Driver"
+    }
+    maria_connection_properties = {
+        "user": "root",
+        "password": "root",
+        "driver": "org.mariadb.jdbc.Driver"
+    } 
+```
+
+1. **MariaDB Connection Properties**: A new dictionary `maria_connection_properties` is defined to store credentials for connecting to the MariaDB database.
+2. **Dual Database Configuration**: Both PostgreSQL and MariaDB JDBC drivers are configured, allowing the function to retrieve data from PostgreSQL and load it into MariaDB.
+
+<hr />
+<br />
+
+### Loading Dimension Tables
+
+The function loads specific columns (dimensions) from PostgreSQL into individual dimension tables in MariaDB.
+
+
+```python
+df = spark.read.jdbc(
+    url="jdbc:postgresql://localhost:5423/airflow",
+    table='public.staging_data',
+    properties=psql_connection_properties
+)
+
+job_dim = df.select(
+    col("job_title").cast(StringType()),
+    col("experience_level").cast(StringType()),
+    col("employment_type").cast(StringType())
+)
+
+employee_dim = df.select(col("employee_residence").cast(StringType()))
+
+company_dim = df.select(
+    col("company_location").cast(StringType()),
+    col("company_size").cast(StringType()),
+    col("remote_ratio").cast(IntegerType())
+)
+
+currency_dim = df.select(col("salary_currency").cast(StringType()))
+```
+
+1. **Reading from PostgreSQL**: The staged data is read from the `staging_data` table in PostgreSQL using JDBC.
+2. **Dimension Tables**: The DataFrame is split into multiple dimension tables (`job_dim`, `employee_dim`, `company_dim`, and `currency_dim`) by selecting relevant columns and casting them to the appropriate types.
+
+<hr />
+<br />
+
+### Writing to MariaDB
+
+Each dimension table is written to MariaDB using the JDBC connector.
+
+```python
+tables = {
+    'job_dim': job_dim,
+    'employee_dim': employee_dim,
+    'company_dim': company_dim,
+    'currency_dim': currency_dim
+}
+
+for table_name, data in tables.items():
+    try:
+        data.write.jdbc(
+            url="jdbc:mariadb://127.0.0.1:3306/main",
+            table=table_name,
+            mode='append',
+            properties=maria_connection_properties
+        )
+    except Exception as e:
+        print(f"Error while writing {table_name} to MariaDB: {e}")
+```
+
+1. **Writing to MariaDB**: Each dimension table is written to its corresponding table in MariaDB using the `write.jdbc` method. The `mode='append'` ensures that new data is appended to the existing tables.
+
+---
+
+# Conclusion
+
+These two functions handle the final stages of the ETL process. The `postgresql_loader` function loads data into a PostgreSQL staging table, while the `mariadb_loader` function extracts data from PostgreSQL, transforms it into dimension tables, and loads it into MariaDB. By leveraging both databases, this approach ensures that data is efficiently staged, transformed, and stored for analytical processing.

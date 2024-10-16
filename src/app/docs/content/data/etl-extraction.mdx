@@ -1,9 +1,10 @@
 ---
-title: ETL - Extraction
-description: Overview of the data extraction process in GradSync
+title: ETL - Load
+description: Overview of the data loading process in GradSync
 ---
+# Code Overview
 
-In GradSync, we use PySpark for data extraction due to its numerous advantages. PySpark, a Python API for Apache Spark, provides a powerful and efficient way to handle large-scale data extraction tasks. Here are the key benefits of using PySpark for data extraction:
+In GradSync, we use PySpark for data loading due to its numerous advantages. PySpark, a Python API for Apache Spark, provides a powerful and efficient way to handle large-scale data loading tasks. Here are the key benefits of using PySpark for data loading:
 
 <br />
 
@@ -11,32 +12,32 @@ In GradSync, we use PySpark for data extraction due to its numerous advantages. 
 
 PySpark leverages Apache Spark's distributed computing capabilities, allowing for efficient processing of large-scale datasets. By distributing data and computations across multiple nodes in a cluster, PySpark can handle massive datasets that would be impractical to process on a single machine.
 
-- **Parallelism**: PySpark executes tasks in parallel, significantly reducing the time required for data extraction.
+- **Parallelism**: PySpark executes tasks in parallel, significantly reducing the time required for data loading.
 - **Fault Tolerance**: Spark's resilient distributed dataset (RDD) model ensures fault tolerance, automatically recovering from node failures.
 
 <br />
 
 ### In-memory Computing
 
-PySpark's in-memory processing enables faster data operations compared to traditional disk-based processing. By keeping data in memory, PySpark minimizes the need for disk I/O operations, resulting in quicker data extraction and transformation.
+PySpark's in-memory processing enables faster data operations compared to traditional disk-based processing. By keeping data in memory, PySpark minimizes the need for disk I/O operations, resulting in quicker data loading and transformation.
 
-- **Speed**: In-memory computing accelerates data processing, making it ideal for real-time data extraction tasks.
+- **Speed**: In-memory computing accelerates data processing, making it ideal for real-time data loading tasks.
 - **Efficiency**: Reduces the overhead associated with reading and writing data to disk, improving overall efficiency.
 
 <br />
 
 ### Unified API
 
-PySpark provides a consistent API for various data formats, simplifying the extraction process from different sources. Whether dealing with JSON, CSV, Parquet, or other formats, PySpark's unified API allows for seamless data extraction.
+PySpark provides a consistent API for various data formats, simplifying the loading process from different sources. Whether dealing with JSON, CSV, Parquet, or other formats, PySpark's unified API allows for seamless data loading.
 
 - **Versatility**: Supports a wide range of data formats, making it easy to integrate data from diverse sources.
-- **Simplicity**: A consistent API reduces the complexity of writing and maintaining extraction code.
+- **Simplicity**: A consistent API reduces the complexity of writing and maintaining loading code.
 
 <br />
 
 ### Scalability
 
-PySpark easily scales from small to large clusters, accommodating growing data volumes. As data volumes increase, PySpark can scale horizontally by adding more nodes to the cluster, ensuring that extraction processes remain efficient.
+PySpark easily scales from small to large clusters, accommodating growing data volumes. As data volumes increase, PySpark can scale horizontally by adding more nodes to the cluster, ensuring that loading processes remain efficient.
 
 - **Elasticity**: Can dynamically scale resources based on workload demands.
 - **Cost-Effectiveness**: Allows for cost-effective scaling by leveraging cloud-based infrastructure.
@@ -45,13 +46,170 @@ PySpark easily scales from small to large clusters, accommodating growing data v
 
 ### Rich Ecosystem
 
-PySpark integrates well with other big data tools and libraries, enhancing its functionality. By leveraging Spark's rich ecosystem, PySpark can be combined with tools like Hadoop, Hive, and Kafka to create comprehensive data extraction pipelines.
+PySpark integrates well with other big data tools and libraries, enhancing its functionality. By leveraging Spark's rich ecosystem, PySpark can be combined with tools like Hadoop, Hive, and Kafka to create comprehensive data loading pipelines.
 
 - **Integration**: Seamlessly integrates with various big data tools, enabling complex data workflows.
 - **Extensibility**: Supports the use of additional libraries and frameworks to extend its capabilities.
-
+<hr />
 <br />
 
-## Conclusion
+# Code Explanation
 
-By using PySpark for data extraction, GradSync benefits from distributed processing, in-memory computing, a unified API, scalability, and a rich ecosystem. These advantages make PySpark an ideal choice for handling large-scale data extraction tasks, ensuring efficient and reliable data processing. Our ETL pipeline leverages PySpark's capabilities to extract data from diverse sources, enabling us to deliver accurate and timely insights.
+## Importing Necessary Libraries
+
+We start by importing the necessary libraries for our ETL process.
+
+```python
+def extract_data():
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+    import pandas as pd 
+```
+
+- `SparkSession`: Entry point to programming with Spark.
+- `StructType`, `StructField`, `IntegerType`, `StringType`: Used to define the schema of the data.
+- `pandas`: Used for data manipulation and analysis.
+
+<hr />
+<br />
+
+## Defining the Schema
+
+We define the schema for the data using `StructType` and `StructField`.
+
+```python
+    schema = StructType([
+        StructField("work_year", IntegerType(), True),
+        StructField("experience_level", StringType(), True),
+        StructField("employment_type", StringType(), True),
+        StructField("job_title", StringType(), True),
+        StructField("salary", IntegerType(), True),
+        StructField("salary_currency", StringType(), True),
+        StructField("salary_in_usd", IntegerType(), True),
+        StructField("employee_residence", StringType(), True),
+        StructField("remote_ratio", IntegerType(), True),
+        StructField("company_location", StringType(), True),
+        StructField("company_size", StringType(), True)
+    ])
+```
+
+- `StructType`: Defines the schema of the DataFrame.
+- `StructField`: Defines each field in the schema.
+
+<hr />
+<br />
+
+## Initializing Spark Session
+
+We initialize a Spark session to interact with Spark.
+
+```python
+    spark = SparkSession.builder \
+        .appName('extractor') \
+        .getOrCreate()
+```
+
+- `SparkSession.builder`: Used to create a new Spark session.
+- `appName('extractor')`: Sets the name of the application.
+
+<hr />
+<br />
+
+## Reading CSV Files
+
+We read data from multiple CSV files into Spark DataFrames.
+
+```python
+    data1 = spark.read.csv('/opt/airflow/data/raw/salaries_2.csv', header=True, schema=schema)
+    data2 = spark.read.csv('/opt/airflow/data/raw/jobs_in_data.csv', header=True, inferSchema=True)
+    data3 = spark.read.csv('/opt/airflow/data/raw/jobs.csv', header=True, inferSchema=True)
+```
+
+- `spark.read.csv`: Reads a CSV file into a DataFrame.
+- `header=True`: Indicates that the first row contains column names.
+- `schema=schema`: Uses the predefined schema for `data1`.
+- `inferSchema=True`: Infers the schema automatically for `data2` and `data3`.
+
+<hr />
+<br />
+
+## Transforming Data
+
+We transform the data to ensure consistency across DataFrames.
+
+```python
+    data2 = data2.select(
+        "work_year",
+        "experience_level",
+        "employment_type",
+        "job_title",
+        "salary",
+        "salary_currency",
+        "salary_in_usd",
+        "employee_residence",
+        "work_setting",
+        "company_location",
+        "company_size"
+    ).withColumnRenamed("work_setting", "remote_ratio")
+
+    data3 = data3.select(
+        data3["date_posted"].cast(IntegerType()).alias("work_year"),
+        data3["job_level"].alias("experience_level"),
+        data3["job_type"].alias("employment_type"),
+        data3["title"].alias("job_title"),
+        data3["min_amount"].cast(IntegerType()).alias("salary"),
+        data3["currency"].alias("salary_currency"),
+        data3["max_amount"].cast(IntegerType()).alias("salary_in_usd"),
+        data3["location"].alias("employee_residence"),
+        data3["is_remote"].cast(IntegerType()).alias("remote_ratio"),
+        data3["location"].alias("company_location"),
+        data3["company_num_employees"].alias("company_size")
+    )
+```
+
+- `select`: Selects specific columns from the DataFrame.
+- `withColumnRenamed`: Renames a column in the DataFrame.
+- `cast`: Changes the data type of a column.
+- `alias`: Renames a column.
+
+<hr />
+<br />
+
+## Reading Parquet File
+
+We read data from a Parquet file into a Spark DataFrame.
+
+```python
+    df_parquet = spark.read.parquet('/opt/airflow/data/raw/data.parquet')
+```
+
+- `spark.read.parquet`: Reads a Parquet file into a DataFrame.
+
+<hr />
+<br />
+
+## Merging DataFrames
+
+We merge all the DataFrames into a single DataFrame.
+
+```python
+    merged_dataset = data1.union(data2).union(data3).union(df_parquet)
+```
+
+- `union`: Combines two DataFrames with the same schema.
+
+<hr />
+<br />
+
+## Saving the Merged Dataset
+
+We save the merged dataset to a CSV file.
+
+```python
+    merged_dataset.toPandas().to_csv("/opt/airflow/data/processed/processed.csv", sep=',', header=True, index=False)
+```
+
+- `toPandas()`: Converts the Spark DataFrame to a Pandas DataFrame.
+- `to_csv`: Saves the DataFrame to a CSV file.
+
+<hr />

@@ -1,0 +1,429 @@
+---
+title: Airflow DAG Code Explanation
+description: Detailed breakdown of the code used in the Airflow DAG for the ETL pipeline.
+---
+
+# Code Explanation
+
+## 1. Importing Required Libraries
+
+```python
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.providers.mysql.operators.mysql import MySqlOperator
+from airflow.operators.dummy import DummyOperator
+from datetime import datetime, timedelta
+import sys
+
+sys.path.append('/opt/airflow/scripts/')
+```
+
+### Explanation:
+- **Library Imports**: The code imports necessary libraries for building the Airflow DAG, including operators for different database interactions and Python functions.
+- **Custom Scripts**: The script path is appended to the system path, allowing for the import of custom functions for data extraction and transformation.
+
+---
+
+## 2. Default Arguments for the DAG
+
+```python
+default_args = {
+    'owner': 'airflow',
+    'retries': 5,
+    'retry_delay': timedelta(minutes=5),
+    'email_on_failure': True,  
+    'email_on_retry': True,
+    'depends_on_past': True
+}
+```
+
+### Explanation:
+- **Default Arguments**: This dictionary defines default parameters for the DAG, such as the owner, number of retries, and email notifications for failures or retries. These settings help manage task behavior and notifications effectively.
+
+---
+
+## 3. DAG Definition
+
+```python
+dag = DAG(
+    dag_id='main_v10',
+    start_date=datetime(2024, 10, 15),
+    default_args=default_args,
+    description='ETL pipeline',
+    schedule_interval=None
+)
+```
+
+### Explanation:
+- **DAG Initialization**: The DAG is instantiated with a unique ID, a start date, default arguments, a description, and a schedule interval. The `schedule_interval=None` indicates that this DAG will not run on a schedule but will be triggered manually.
+
+---
+
+## 4. Task Creation with PostgresOperator
+
+The following sections detail the creation of various tasks using the `PostgresOperator` to interact with the PostgreSQL database.
+
+### Create Staging Schema
+
+```python
+create_staging_schema = PostgresOperator(
+    task_id='create_staging_schema',
+    postgres_conn_id='postgresid',
+    sql='''
+    CREATE TABLE IF NOT EXISTS staging_data (
+        work_year INT,
+        experience_level VARCHAR(50),
+        employment_type VARCHAR(50),
+        job_title VARCHAR(100),
+        salary DECIMAL(10, 2),
+        salary_currency VARCHAR(10),
+        salary_in_usd DECIMAL(10, 2),
+        employee_residence VARCHAR(100),
+        remote_ratio INT CHECK (remote_ratio IN (0, 50, 100)),
+        company_location VARCHAR(100),
+        company_size CHAR(1) CHECK (company_size IN ('S', 'M', 'L')),
+        load_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    ''',
+    dag=dag
+)
+```
+
+### Explanation:
+- **Creating Staging Schema**: This task creates a staging table in PostgreSQL to hold the incoming data. The SQL statement ensures that the table is created only if it does not already exist, thus avoiding errors during DAG runs.
+
+---
+
+## 5. Creating Archived Schema
+
+```python
+create_archived_schema = PostgresOperator(
+    task_id='create_archived_schema',
+    postgres_conn_id='postgresid',
+    sql='''
+    CREATE TABLE IF NOT EXISTS archived_staging_data (
+        work_year INT,
+        experience_level VARCHAR(50),
+        employment_type VARCHAR(50),
+        job_title VARCHAR(100),
+        salary DECIMAL(10, 2),
+        salary_currency VARCHAR(10),
+        salary_in_usd DECIMAL(10, 2),
+        employee_residence VARCHAR(100),
+        remote_ratio INT CHECK (remote_ratio IN (0, 50, 100)),
+        company_location VARCHAR(100),
+        company_size CHAR(1) CHECK (company_size IN ('S', 'M', 'L')),
+        load_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    ''',
+    dag=dag
+)
+```
+
+### Explanation:
+- **Creating Archived Schema**: This task creates an archived table to store old data from the staging table. Similar to the previous task, it checks for the existence of the table before attempting to create it.
+
+---
+
+## 6. Creating Archive Function
+
+```python
+create_archive_function = PostgresOperator(
+    task_id='create_archive_function',
+    postgres_conn_id='postgresid',
+    sql='''
+    CREATE OR REPLACE FUNCTION archive_old_data()
+    RETURNS void AS $$
+    BEGIN
+        INSERT INTO archived_staging_data
+        SELECT * FROM staging_data 
+        WHERE load_time < current_timestamp - INTERVAL '1 hour';
+
+        DELETE FROM staging_data
+        WHERE load_time < current_timestamp - INTERVAL '1 hour';
+    END;
+    $$ LANGUAGE PLPGSQL;
+    ''',
+    dag=dag
+)
+```
+
+### Explanation:
+- **Archive Function**: This task creates a PostgreSQL function that archives data older than one hour from the `staging_data` table into `archived_staging_data`. It also deletes the old records from the staging table after archiving, helping manage storage and data freshness.
+
+---
+
+## 7. Running Archive Function
+
+```python
+run_archive_function = PostgresOperator(
+    task_id='run_archive_function',
+    postgres_conn_id='postgresid',
+    sql='SELECT archive_old_data();',
+    dag=dag
+)
+```
+
+### Explanation:
+- **Running Archive Function**: This task calls the previously defined archive function to execute the archiving process as part of the DAG execution flow.
+
+---
+
+## 8. Creating Dimensions with MySqlOperator
+
+Similar to the PostgreSQL tasks, the following sections cover creating dimension tables using `MySqlOperator`.
+
+### Create Dimensions Task
+
+```python
+create_dimensions = MySqlOperator(
+    task_id="create_dimensions",
+    mysql_conn_id='mariadb',
+    sql='''
+    USE main;
+
+    CREATE TABLE IF NOT EXISTS job_dim (
+        job_id INT AUTO_INCREMENT PRIMARY KEY,
+        job_title VARCHAR(100) NOT NULL,
+        experience_level VARCHAR(50) NOT NULL,
+        employment_type VARCHAR(50) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS employee_dim (
+        employee_id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_residence VARCHAR(100) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS company_dim (
+        company_id INT AUTO_INCREMENT PRIMARY KEY,
+        company_location VARCHAR(100) NOT NULL,
+        company_size VARCHAR(20) NOT NULL,
+        remote_ratio INT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS currency_dim (
+        currency_id INT AUTO_INCREMENT PRIMARY KEY,
+        salary_currency CHAR(10) NOT NULL
+    );
+    ''',
+    autocommit=True,
+    dag=dag
+)
+```
+
+### Explanation:
+- **Creating Dimension Tables**: This task creates the dimension tables in the MariaDB database if they do not already exist. This structure supports the OLAP processes of the pipeline.
+
+---
+
+## 9. Creating the Fact Table
+
+```python
+create_fact_table = MySqlOperator(
+    task_id="create_fact_table",
+    mysql_conn_id='mariadb',
+    sql='''
+    USE main;
+
+    CREATE TABLE IF NOT EXISTS jobs_fact (
+        fact_id INT AUTO_INCREMENT PRIMARY KEY,
+        job_id INT,
+        employee_id INT,
+        company_id INT,
+        currency_id INT,
+        salary DECIMAL(15, 2) NOT NULL,
+        salary_in_usd DECIMAL(15, 2) NOT NULL
+    );
+    ''',
+    autocommit=True,
+    dag=dag
+)
+```
+
+### Explanation:
+- **Creating the Fact Table**: This task creates the `jobs_fact` table in MariaDB, which serves as the central table for storing transactional data linked to the dimensions created earlier. It includes foreign keys that connect to the respective dimension tables.
+
+---
+
+## 10. Loading the Fact Table
+
+```python
+load_fact_table = MySqlOperator(
+    task_id='load_fact_table',
+    mysql_conn_id='mariadb',
+    sql='''
+    CREATE PROCEDURE load_fact()
+    BEGIN
+        INSERT INTO jobs_fact (
+            job_id,
+            employee_id,
+            company_id,
+            currency_id,
+            salary,
+            salary_in_usd
+        )
+        SELECT 
+            j.job_id,
+            e.employee_id,
+            c.company_id,
+            cu.currency_id,
+            b.salary,
+            b.salary_in_usd
+        FROM big_table b
+        JOIN job_dim j ON j.job_id = b.id
+        JOIN employee_dim e ON e.employee_id = b.id
+        JOIN company_dim c ON c.company_id = b.id
+        JOIN currency_dim cu ON cu.currency_id = b.id;
+    END;
+
+    CALL load_fact();
+    ''',
+    dag=dag
+)
+```
+
+### Explanation:
+- **Loading the Fact Table**: This task creates a stored procedure to populate the `jobs_fact` table by joining data from the `big_table` with the dimension tables. This step ensures that each fact record is associated with its corresponding dimensions, forming a complete data model for OLAP analysis.
+
+---
+
+## 11. Optimizing OLAP with Indexes
+
+```python
+mariadb_optimizers = MySqlOperator(
+    task_id='optimize_olap',
+    mysql_conn_id='mariadb',
+    sql='''
+    CREATE INDEX idx_jobs_fact_date ON jobs_fact(date_id);
+    CREATE INDEX idx_jobs_fact_job ON jobs_fact(job_id);
+    CREATE INDEX idx_jobs_fact_employee ON jobs_fact(employee_id);
+    CREATE INDEX idx_jobs_fact_company ON jobs_fact(company_id);
+    CREATE INDEX idx_jobs_fact_currency ON jobs_fact(currency_id);
+    ''',
+    dag=dag
+)
+```
+
+### Explanation:
+- **Creating Indexes**: This task adds indexes to the `jobs_fact` table to improve query performance. Indexes facilitate faster data retrieval, especially during complex analytical queries that involve filtering or joining on these columns.
+
+---
+
+## 12. PostgreSQL Optimizations
+
+```python
+postgresql_optimizers = PostgresOperator(
+    task_id='optimize_staging_table',
+    postgres_conn_id='postgresid',
+    sql='''
+    ALTER SYSTEM SET wal_buffers = '16MB';
+    ALTER SYSTEM SET checkpoint_completion_target = 0.9;
+    ''',
+    dag=dag
+)
+```
+
+### Explanation:
+- **PostgreSQL Optimizations**: This task adjusts PostgreSQL system parameters to optimize performance for write-heavy operations. The `wal_buffers` setting increases the memory allocated for write-ahead logs, while the `checkpoint_completion_target` spreads out I/O operations, reducing performance bottlenecks.
+
+---
+
+## 13. Loading Archived Data
+
+```python
+loading_archived_data = PostgresOperator(
+    task_id="loading_archived_data",
+    postgres_conn_id='postgresid',
+    sql='''
+    CREATE OR REPLACE FUNCTION archive_old_data()
+    RETURNS void AS $$
+    BEGIN
+        INSERT INTO archived_staging_data
+        SELECT * FROM staging_data 
+        WHERE load_time < current_timestamp - INTERVAL '1 hour';
+
+        DELETE FROM staging_data
+        WHERE load_time < current_timestamp - INTERVAL '1 hour';
+    END;
+    $$ LANGUAGE PLPGSQL;
+
+    SELECT archive_old_data();
+    ''',
+    dag=dag
+)
+```
+
+### Explanation:
+- **Loading Archived Data**: This task creates or replaces the function to archive data older than one hour from the `staging_data` table into the `archived_staging_data` table. It helps in maintaining data freshness and storage efficiency by removing old records.
+
+---
+
+## 14. Extract, Transform, Load Tasks
+
+The final tasks in the DAG involve calling Python functions to perform the ETL processes.
+
+### Extract Task
+
+```python
+extract = PythonOperator(
+    task_id='extract',
+    python_callable=extract_data,
+    dag=dag
+)
+```
+
+### Transform Task
+
+```python
+transform = PythonOperator(
+    task_id='transform',
+    python_callable=transform_data,
+    dag=dag
+)
+```
+
+### Load PostgreSQL Task
+
+```python
+load_postgresql = PythonOperator(
+    task_id='load_postgres',
+    python_callable=postgresql_loader,
+    dag=dag
+)
+```
+
+### Loading MariaDB Dimensions
+
+```python
+loading_maria_dims = PythonOperator(
+    task_id='loading_dim_maria',
+    python_callable=mariadb_loader,
+    dag=dag
+)
+```
+
+### Explanation:
+- **ETL Tasks**: These tasks call Python functions to handle the extraction, transformation, and loading processes, linking the entire workflow together. Each task uses a specific callable that encapsulates the logic for that stage of the ETL pipeline.
+
+---
+
+## 15. Setting Up Task Dependencies
+
+Finally, the task dependencies are defined to ensure that tasks are executed in the correct order.
+
+```python
+create_staging_schema >> create_archived_schema >> create_archive_function >> run_archive_function
+create_dimensions >> create_fact_table 
+[run_archive_function, create_fact_table] >> join
+join >> extract >> transform >> load_postgresql >> loading_maria_dims >> load_fact_table >> [mariadb_optimizers, postgresql_optimizers, loading_archived_data]
+```
+
+### Explanation:
+- **Task Dependencies**: This section defines the execution order for the tasks in the DAG using the bitwise right-shift operator (`>>`). It establishes the flow from schema creation through data extraction, transformation, and loading, ensuring that each step is completed before moving to the next.
+
+---
+
+## Conclusion
+
+This code explanation provides a detailed breakdown of the Airflow DAG implementation for the ETL pipeline. Each task is designed to perform specific actions, ensuring the pipeline operates smoothly and efficiently. By leveraging Airflow's powerful scheduling and orchestration capabilities, we can maintain a robust data pipeline that effectively integrates data from multiple sources into our target databases.

@@ -1,0 +1,39 @@
+---
+title: Machine Learning Model Overview
+description: Analyzing the approach and rationale behind using Random Forest for predicting data engineer salaries based on job-related features.
+---
+
+In this project, we focus on predicting the salaries of data engineers based on various features such as `experience_level`, `job_title`, `employment_type`, `remote_ratio`, and other relevant attributes. The objective is to predict the `salary` as well as the `salary_in_usd` for individuals based on their work conditions and job characteristics.
+<br />
+### Why Random Forest?
+
+We chose Random Forest for this model due to its advantages:
+- **Robustness to Overfitting**: Random Forest is a powerful ensemble technique that builds multiple decision trees using different subsets of data, reducing overfitting risks that occur with single decision tree models.
+- **Handling Categorical Variables**: The dataset contains both numerical features like `work_year`, `salary`, and categorical features like `experience_level`, `job_title`, and `company_location`. Random Forest can effectively handle this mix of feature types.
+- **Feature Importance**: It helps in identifying the importance of each feature in predicting the target variable, which is useful for understanding the main drivers of salary variation.
+<br />
+
+### Why not Linear Regression?
+
+While Linear Regression is a common algorithm for predicting continuous variables, it was not used in this case due to the complexity of the data and the presence of non-linear relationships between features and salary. Additionally, linear models may not handle the interaction between features (such as `job_title` and `experience_level`) as well as Random Forest.
+<br />
+
+### Target Variable: `salary_in_usd`
+
+The target variable is `salary_in_usd`, which allows us to standardize salary predictions across different currencies and provide a consistent comparison. This also helps in building a model that generalizes better across geographic regions.
+<br />
+
+### Data Preprocessing
+
+- **Handling Missing Values**: Any missing values in key features such as `job_title`, `salary`, or `remote_ratio` were addressed through imputation or removal to ensure model performance is not affected by incomplete data.
+- **Class Imbalance**: To handle class imbalance, particularly for categorical variables like `employment_type` and `experience_level`, we employed techniques such as `resample` to ensure the model receives balanced training data.
+<br />
+
+### Why Predict Salary?
+
+Predicting salary based on job-related factors is essential for understanding how different features like `experience_level`, company size, and location impact salary levels. This can provide valuable insights to both job seekers and employers in terms of salary expectations and negotiations.
+<br />
+
+---
+
+By using Random Forest and focusing on `salary_in_usd`, we can make accurate predictions and derive insights into the factors that influence salary outcomes for data engineers across the industry.
