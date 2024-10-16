@@ -29,7 +29,7 @@ interface ExtractHeadingsOptions {
   slugFn?: (title: string) => string;
 }
 
-export function extractHeadings(
+function extractHeadings(
   content: string,
   options?: ExtractHeadingsOptions
 ): Array<Heading> {
