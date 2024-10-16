@@ -1,5 +1,3 @@
-
-
 def extract_data():
     from pyspark.sql import SparkSession
     from pyspark.sql.types import StructType, StructField, IntegerType, StringType
