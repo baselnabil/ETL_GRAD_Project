@@ -7,7 +7,7 @@ export default function DocsLandingPage() {
     <Navbar />
     <div className="flex flex-col lg:flex-row">
       <aside className="w-full lg:w-1/4 p-4 bg-base-200">
-        <DocsMenu />
+        <DocsMenu  headings={[]}/>
       </aside>
       <main className="w-full lg:w-3/4 p-4">
         <h1 className="text-4xl font-bold mb-4">Documentation</h1>
