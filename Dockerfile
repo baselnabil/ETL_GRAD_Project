@@ -25,6 +25,10 @@ RUN mkdir -p /opt/spark/jars && \
 RUN curl -L https://jdbc.postgresql.org/download/postgresql-42.6.0.jar -o /tmp/postgresql-42.6.0.jar && \
     mv /tmp/postgresql-42.6.0.jar /opt/spark/jars/postgresql-42.6.0.jar
 
+RUN curl -L https://dlm.mariadb.com/3852266/Connectors/java/connector-java-3.4.1/mariadb-java-client-3.4.1.jar -o /tmp/mariadb-java-client-3.4.1.jar && \
+    mv /tmp/mariadb-java-client-3.4.1.jar  /opt/spark/jars/mariadb-java-client-3.4.1.jar
+
+
 USER airflow
 
 RUN pip install --upgrade pip

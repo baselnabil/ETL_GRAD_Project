@@ -5451,3 +5451,24 @@ airflow.exceptions.DuplicateTaskIdFound: Task id 'create_archived_schema' has al
 [2024-10-15T18:11:09.304+0000] {logging_mixin.py:190} INFO - [2024-10-15T18:11:09.304+0000] {dag.py:3239} INFO - Sync 1 DAGs
 [2024-10-15T18:11:09.315+0000] {logging_mixin.py:190} INFO - [2024-10-15T18:11:09.315+0000] {dag.py:4180} INFO - Setting next_dagrun for main_v10 to None, run_after=None
 [2024-10-15T18:11:09.329+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/main.py took 0.080 seconds
+[2024-10-15T18:11:39.498+0000] {processor.py:186} INFO - Started process (PID=3763) to work on /opt/airflow/dags/main.py
+[2024-10-15T18:11:39.505+0000] {processor.py:914} INFO - Processing file /opt/airflow/dags/main.py for tasks to queue
+[2024-10-15T18:11:39.507+0000] {logging_mixin.py:190} INFO - [2024-10-15T18:11:39.507+0000] {dagbag.py:588} INFO - Filling up the DagBag from /opt/airflow/dags/main.py
+[2024-10-15T18:11:39.517+0000] {processor.py:925} INFO - DAG(s) 'main_v10' retrieved from /opt/airflow/dags/main.py
+[2024-10-15T18:11:39.547+0000] {logging_mixin.py:190} INFO - [2024-10-15T18:11:39.547+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2024-10-15T18:11:39.561+0000] {logging_mixin.py:190} INFO - [2024-10-15T18:11:39.561+0000] {dag.py:4180} INFO - Setting next_dagrun for main_v10 to None, run_after=None
+[2024-10-15T18:11:39.576+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/main.py took 0.083 seconds
+[2024-10-15T22:29:22.393+0000] {processor.py:186} INFO - Started process (PID=3775) to work on /opt/airflow/dags/main.py
+[2024-10-15T22:29:22.396+0000] {processor.py:914} INFO - Processing file /opt/airflow/dags/main.py for tasks to queue
+[2024-10-15T22:29:22.407+0000] {logging_mixin.py:190} INFO - [2024-10-15T22:29:22.405+0000] {dagbag.py:588} INFO - Filling up the DagBag from /opt/airflow/dags/main.py
+[2024-10-15T22:29:22.457+0000] {processor.py:925} INFO - DAG(s) 'main_v10' retrieved from /opt/airflow/dags/main.py
+[2024-10-15T22:29:22.573+0000] {logging_mixin.py:190} INFO - [2024-10-15T22:29:22.572+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2024-10-15T22:29:22.620+0000] {logging_mixin.py:190} INFO - [2024-10-15T22:29:22.620+0000] {dag.py:4180} INFO - Setting next_dagrun for main_v10 to None, run_after=None
+[2024-10-15T22:29:22.684+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/main.py took 0.470 seconds
+[2024-10-15T22:29:52.972+0000] {processor.py:186} INFO - Started process (PID=3789) to work on /opt/airflow/dags/main.py
+[2024-10-15T22:29:52.973+0000] {processor.py:914} INFO - Processing file /opt/airflow/dags/main.py for tasks to queue
+[2024-10-15T22:29:52.975+0000] {logging_mixin.py:190} INFO - [2024-10-15T22:29:52.975+0000] {dagbag.py:588} INFO - Filling up the DagBag from /opt/airflow/dags/main.py
+[2024-10-15T22:29:52.990+0000] {processor.py:925} INFO - DAG(s) 'main_v10' retrieved from /opt/airflow/dags/main.py
+[2024-10-15T22:29:53.027+0000] {logging_mixin.py:190} INFO - [2024-10-15T22:29:53.027+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2024-10-15T22:29:53.045+0000] {logging_mixin.py:190} INFO - [2024-10-15T22:29:53.044+0000] {dag.py:4180} INFO - Setting next_dagrun for main_v10 to None, run_after=None
+[2024-10-15T22:29:53.066+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/main.py took 0.102 seconds

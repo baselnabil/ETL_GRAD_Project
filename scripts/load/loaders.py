@@ -54,9 +54,8 @@ def postgresql_loader():
 
 def mariadb_loader():
     from pyspark.sql import SparkSession
-    from pyspark.sql.types import IntegerType, BooleanType, DateType, StringType
+    from pyspark.sql.types import IntegerType, StringType
     from pyspark.sql.functions import year, col
-    import pandas as pd
 
     psql_connection_properties = {
         "user": "airflow",
@@ -71,14 +70,13 @@ def mariadb_loader():
 
     try:
         spark = SparkSession.builder \
-                .appName('mariadbloader') \
-                .config('spark.jars',
-                        '/home/basel/main/Grad_proj/jars/mariadb-java-client-3.4.1.jar,/home/basel/main/Grad_proj/jars/postgresql-42.6.0.jar') \
-                .getOrCreate()
+            .appName('mariadbloader') \
+            .config('spark.jars.packages', 'org.mariadb.jdbc:mariadb-java-client:3.4.1,org.postgresql:postgresql:42.6.0') \
+            .getOrCreate()
 
         try:
             df = spark.read.jdbc(
-                url="jdbc:postgresql://localhost:5423/airflow",
+                url="jdbc:postgresql://postgres:5432/airflow",
                 table='public.staging_data',
                 properties=psql_connection_properties
             )
@@ -110,7 +108,7 @@ def mariadb_loader():
                 for table_name, data in tables.items():
                     try:
                         data.write.jdbc(
-                            url="jdbc:mariadb://127.0.0.1:3306/main",
+                            url="jdbc:mariadb://mariadb:3306/main",
                             table=table_name,
                             mode='append',
                             properties=maria_connection_properties
