@@ -165,12 +165,42 @@ def extract_data():
     merged_dataset.toPandas().to_csv('/path/to/output.csv', index=False)
 
 ```
-## Loading Data into PostgreSQL
+## Creating PostgreSQL staging database
 ```sql
    CREATE TABLE staging_data (...);
    ALTER TABLE staging_data ...;
+   CREATE TABLE arcived_data (...);
+   CREATE PROCEDURE load_data(...);
 ```
-## Loading Data into MariaDB
+## Creating mariadb star model
+(add imaged named model that is at this path './images/model.png')
  ```sql 
    SET GLOBAL sql_mode = 'ANSI';
 ```
+## Apache Airflow DAGs
+# To integrate the ETL pipeline, add the DAG file to the dags directory and ensure the volumes are mounted correctly:
+```yaml
+   volumes:
+    - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
+    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
+    - ${AIRFLOW_PROJ_DIR:-.}/scripts:/opt/airflow/scripts
+    - /home/meqlad/airflow_customers_data_pipeline/data:/home/meqlad/airflow_customers_data_pipeline/data
+```
+# Access the container to verify volume mounts:
+```bash
+   docker exec -it -u 0 etl_grad_project-airflow-webserver-1 bash
+   ls -l 
+```
+# Add the main file in the dags directory for our main DAG and ensure the root path is appended in the container:
+```python
+   sys.path.append('/opt/ariflow/scripts/')
+```
+## DAG Structure
+
+( image of the dags with name dags in this location './images/dags.png')
+
+## Machine Learning and Power BI Integration
+(image of powerbi at)
