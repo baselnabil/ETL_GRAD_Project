@@ -1,5 +1,5 @@
 # ETL Project: Multi-Source Data Integration and Analysis
-
+![General_model](./images/general.jpeg)
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Architecture](#architecture)
@@ -173,7 +173,7 @@ def extract_data():
    CREATE PROCEDURE load_data(...);
 ```
 ## Creating mariadb star model
-(add imaged named model that is at this path './images/model.png')
+![model](./images//model.png)
  ```sql 
    SET GLOBAL sql_mode = 'ANSI';
 ```
@@ -200,7 +200,6 @@ def extract_data():
 ```
 ## DAG Structure
 
-( image of the dags with name dags in this location './images/dags.png')
-
+![dags](./images/dags.jpeg)
 ## Machine Learning and Power BI Integration
 (image of powerbi at)
