@@ -13,8 +13,8 @@ const AnimatedBackground: React.FC = () => {
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
         color: colors[i % colors.length],
-        offsetX: (Math.random() * 0.08 + 0.02) * window.innerWidth, // 2-10% of window width
-        offsetY: (Math.random() * 0.08 + 0.02) * window.innerHeight, // 2-10% of window height
+        offsetX: (Math.random() * 0.08 + 0.02) * window.innerWidth,
+        offsetY: (Math.random() * 0.08 + 0.02) * window.innerHeight, 
       }));
       setBlobs(newBlobs);
     };
@@ -36,7 +36,7 @@ const AnimatedBackground: React.FC = () => {
             const targetY = target.y + blob.offsetY;
             const angle = Math.atan2(targetY - blob.y, targetX - blob.x);
             const distance = Math.hypot(targetX - blob.x, targetY - blob.y);
-            const speed = Math.min(distance / 20, 5); // Adjust speed as needed
+            const speed = Math.min(distance / 20, 5);
             return {
               ...blob,
               x: blob.x + Math.cos(angle) * speed,
