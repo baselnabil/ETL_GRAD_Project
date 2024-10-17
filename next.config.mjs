@@ -5,10 +5,14 @@ import rehypeImageSize from "./src/lib/rehype-image-size.mjs"
 
 const withMDX = mdx({
   extension: /\.mdx?$/,
+  output: "export",
   options: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypeSlug, [rehypeImageSize, { root: process.cwd() }]],
   },
+  images: {
+    unoptimized: true
+}
 });
  
 /** @type {import('next').NextConfig} */
