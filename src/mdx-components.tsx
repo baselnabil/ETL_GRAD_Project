@@ -30,7 +30,7 @@ const components: MDXComponents = {
   ),
   Image: (props) => {
     const src = props.src.split("public")[1];
-    const fsrc = process.env.NODE_ENV === "development" ? src:`/ETL_GRAD_Project${src}`;
+    const fsrc = process.env.NODE_ENV === "development" ? src:`/${process.env.REPO_NAME}${src}`;
 
   return (<div> <Image {...props} src = {fsrc} alt={props.alt} /></div>) },
   h1: ({ children }) => (

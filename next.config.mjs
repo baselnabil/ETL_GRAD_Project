@@ -17,7 +17,7 @@ const nextConfig = {
     images: {
       unoptimized: true,
     },
-    basePath: process.env.NODE_ENV === "development" ? "":"/ETL_GRAD_Project",
+    basePath: process.env.NODE_ENV === "development" ? "":`/${process.env.REPO_NAME}`,
   // Configure `pageExtensions` to include MDX files
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   // Optionally, add any other Next.js config below

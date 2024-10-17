@@ -57,6 +57,13 @@ export const DocsNav = [
     items: [
       { href: "/docs/docker/docker-overview", label: "Docker Overview" },
     ]
+  },
+  {
+    header: "Docs site",
+    color: "grey",
+    items: [
+      { href: "/docs/docss/docss-overview", label: "Docs Site Overview" },
+    ]
   }
   // ...
 ];
