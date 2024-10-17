@@ -3,7 +3,9 @@ title: Overview
 description: What is the project about?
 ---
 
-### GradSync aims to integrate data from various sources to gain valuable insights. We employ a robust ETL (Extract, Transform, Load) pipeline to process data from different formats and sources, clean and merge it, and store it in optimized database systems for further analysis.
+# GradSync aims to integrate data from various sources to gain valuable insights.
+## We employ a robust ETL (Extract, Transform, Load) pipeline to process data from different formats and sources, clean and merge it, and store it in optimized database systems for further analysis.
+
 <br />
 ### ETL Pipeline
 
@@ -21,9 +23,14 @@ Furthermore, GradSync includes a comprehensive data visualization component usin
 
 Our ETL pipeline is built using industry-standard tools and technologies to ensure robustness and scalability. We use Docker to containerize our applications, making it easy to deploy and manage them across different environments. This containerization approach also allows us to scale our ETL pipeline horizontally, handling increasing data volumes without compromising performance.
 <br />
+### Workflow Orchestration with Apache Airflow
+
+To manage and orchestrate our ETL workflows, we use Apache Airflow. Airflow allows us to define, schedule, and monitor complex workflows programmatically. With its powerful scheduling capabilities and rich user interface, we can easily manage dependencies, retry failed tasks, and visualize the execution of our ETL processes. Airflow's extensibility also enables us to integrate with various data sources and destinations, making it a versatile tool for our data engineering needs.
+<br />
 ### Best Practices
 
 We also employ best practices in data engineering to ensure the maintainability and extensibility of our ETL pipeline. Our codebase is modular and well-documented, making it easy for new team members to understand and contribute to GradSync. We use version control systems to track changes and collaborate effectively with other team members.
+<hr />
 <br />
 ### Conclusion
 

@@ -8,7 +8,7 @@ In this section, we discuss the setup of MariaDB as the OLAP (Online Analytical 
 <br />
 
 # MariaDB OLAP Schema
-
+<Image src="/public/images/model.png" alt="model overview"/>
 ### Big Table Creation
 
 The `big_table` is created as a temporary staging table that holds the incoming data before being split into dimensions and fact tables. Once the data is loaded into respective dimensions and facts, the table can be dropped.

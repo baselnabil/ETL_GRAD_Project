@@ -83,9 +83,111 @@ print(f"R-squared: {r2}")
 - **Model Evaluation**: Two evaluation metrics are used:
   - **Mean Squared Error (MSE)**: Measures the average squared difference between predicted and actual values. Lower values indicate better model performance.
   - **R-squared (R²)**: Represents the proportion of variance in the target variable (salary_in_usd) that is predictable from the feature set. Values closer to 1 indicate a better fit.
+<hr />
+<br />
+
+## 3. Additional Data Processing and Model Retraining
+
+```python
+import re
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+t2_df = pd.read_csv('DataEngineer.csv')
+t2New_df = pd.DataFrame()
+
+# Function to Extract Salary
+def extract_salary(salary_str):
+    match = re.search(r'$(\d+)K-$(\d+)K', salary_str)
+    if match:
+        lower = int(match.group(1)) * 1000
+        upper = int(match.group(2)) * 1000
+        return int((lower + upper) / 2)
+    return None
+
+# Function to Extract Work Year Ratio
+def extract_work_year_ratio(df):
+    year_counts = df['work_year'].value_counts(normalize=True)
+    return year_counts
+
+# Generate Work Years Based on Year Ratio
+def generate_work_years(n, year_ratio):
+    years = np.random.choice(year_ratio.index, size=n, p=year_ratio.values)
+    return years
+
+year_ratio = extract_work_year_ratio(data)
+
+# Map Company Size
+def map_company_size(size_str):
+    if '1 to 50 employees' in size_str or '51 to 200 employees' in size_str:
+        return 'S'
+    elif '201 to 500 employees' in size_str or '501 to 1000 employees' in size_str:
+        return 'M'
+    elif '1001 to 5000 employees' in size_str or '5001 to 10000 employees' in size_str or '10000+ employees' in size_str:
+        return 'L'
+    return 'NA'
+
+# Process new data
+t2New_df_dict = {
+    'work_year': generate_work_years(len(t2_df), year_ratio),
+    'employment_type': 'FT',  # placeholder. Full Time
+    'job_title': t2_df['Job Title'],
+    'salary': t2_df['Salary Estimate'].apply(extract_salary),
+    'salary_currency': 'USD',
+    'salary_in_usd': t2_df['Salary Estimate'].apply(extract_salary),
+    'employee_residence': t2_df['Location'],
+    'remote_ratio': 0,
+    'company_location': t2_df['Location'],
+    'company_size': t2_df['Size'].apply(map_company_size)
+}
+
+t2New_df = pd.DataFrame(t2New_df_dict)
+t2New_df_processed = pd.get_dummies(t2New_df, drop_first=True)
+
+# Ensure the columns match between the data and t2New_df
+missing_cols = set(X.columns) - set(t2New_df_processed.columns)
+missing_cols = list(missing_cols)
+
+# Create a DataFrame with all zeros for the missing columns
+missing_df = pd.DataFrame(0, index=t2New_df_processed.index, columns=missing_cols)
+
+# Concatenate the new columns with the existing DataFrame
+t2New_df_processed = pd.concat([t2New_df_processed, missing_df], axis=1)
+
+# Reorder columns to match the original DataFrame X
+t2New_df_processed = t2New_df_processed[X.columns]
+
+# Predict Experience Levels
+t2New_df['experience_level'] = best_rf_model.predict(t2New_df_processed)
+
+# Retrain the model on the combined dataset
+rf_model.fit(t2New_df_processed, t2New_df['experience_level'])
+
+# Evaluate the model again
+y_pred_retrained = best_rf_model.predict(X_test)
+retrained_accuracy = accuracy_score(y_test, y_pred_retrained)
+print(f'Retrained accuracy: {retrained_accuracy:.2f}')
+print(classification_report(y_test, y_pred_retrained))
+
+# Confusion Matrix
+cm = confusion_matrix(y_test, y_pred_retrained)
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix - Retrained Model')
+plt.show()
+```
+
+### Explanation:
+
+- **Additional Data Processing**: We load new data, extract salary values, and generate work years based on the year ratio. We also map company sizes and process the new data to match the original feature set.
+- **Model Retraining**: The model is retrained on the combined dataset, and predictions are made on the test set.
+- **Model Evaluation**: The retrained model's accuracy is evaluated, and a confusion matrix is generated to visualize the performance.
 
 <hr />
 
-## 3. Conclusion
+## 4. Conclusion
 
 The **Random Forest Regressor** was chosen for its robustness and ability to handle complex datasets like the salary data, which includes both categorical and numerical features. By carefully preprocessing the data and training the model, we were able to predict salaries with a reasonable degree of accuracy. This approach can be further improved by fine-tuning hyperparameters or experimenting with different models, but the current setup provides a solid foundation for salary prediction.

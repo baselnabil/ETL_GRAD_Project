@@ -422,6 +422,36 @@ join >> extract >> transform >> load_postgresql >> loading_maria_dims >> load_fa
 ### Explanation:
 - **Task Dependencies**: This section defines the execution order for the tasks in the DAG using the bitwise right-shift operator (`>>`). It establishes the flow from schema creation through data extraction, transformation, and loading, ensuring that each step is completed before moving to the next.
 
+# Integrating the ETL Pipeline
+
+To integrate the ETL pipeline, add the DAG file to the `dags` directory and ensure the volumes are mounted correctly:
+
+```docker
+   volumes:
+    - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
+    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
+    - ${AIRFLOW_PROJ_DIR:-.}/scripts:/opt/airflow/scripts
+    - /home/meqlad/airflow_customers_data_pipeline/data:/home/meqlad/airflow_customers_data_pipeline/data
+```
+Access the container to verify volume mounts:
+
+```bash
+   docker exec -it -u 0 etl_grad_project-airflow-webserver-1 bash
+   ls -l 
+```
+
+Add the main file in the `dags` directory for our main DAG and ensure the root path is appended in the container:
+
+```python
+   sys.path.append('/opt/ariflow/scripts/')
+```
+
+<br />
+
+
 ---
 
 ## Conclusion

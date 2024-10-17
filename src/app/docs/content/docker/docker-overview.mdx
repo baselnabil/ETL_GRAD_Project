@@ -1,0 +1,306 @@
+---
+title: Docker Overview
+description: Detailed explanation of the Docker setup for the project, including Dockerfile and Docker Compose configuration.
+---
+
+# Docker Setup for GradSync
+
+In this project, we use Docker to containerize our applications, ensuring a consistent and portable environment across different development, testing, and production setups. Docker allows us to package all the dependencies and configurations required for our project into isolated containers, making it easy to manage and deploy.
+
+<br />
+
+## Dockerfile
+
+The Dockerfile defines the environment and dependencies for our application. Here's the Dockerfile used in this project:
+
+```docker
+FROM apache/airflow:2.7.1
+
+USER root
+
+COPY requirements.txt /requirements.txt
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        python3-dev \
+        default-jdk \
+        procps \
+        libpq-dev \
+        curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
+ENV PATH $JAVA_HOME/bin:$PATH
+
+RUN mkdir -p /opt/spark/jars && \
+    chmod -R 777 /opt/spark/jars
+
+RUN curl -L https://jdbc.postgresql.org/download/postgresql-42.6.0.jar -o /tmp/postgresql-42.6.0.jar && \
+    mv /tmp/postgresql-42.6.0.jar /opt/spark/jars/postgresql-42.6.0.jar
+
+RUN curl -L https://dlm.mariadb.com/3852266/Connectors/java/connector-java-3.4.1/mariadb-java-client-3.4.1.jar -o /tmp/mariadb-java-client-3.4.1.jar && \
+    mv /tmp/mariadb-java-client-3.4.1.jar  /opt/spark/jars/mariadb-java-client-3.4.1.jar
+
+USER airflow
+
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r /requirements.txt
+```
+
+### Explanation:
+
+- **Base Image**: We use the `apache/airflow:2.7.1` image as the base image, which includes Apache Airflow.
+- **User Permissions**: Switch to the root user to install system dependencies.
+- **Copy Requirements**: Copy the `requirements.txt` file into the container.
+- **Install Dependencies**: Install necessary system packages, including GCC, Python development tools, JDK, and PostgreSQL libraries.
+- **Environment Variables**: Set environment variables for Java.
+- **Download JDBC Drivers**: Download and place JDBC drivers for PostgreSQL and MariaDB into the appropriate directory.
+- **Switch User**: Switch back to the `airflow` user.
+- **Install Python Packages**: Upgrade pip and install Python packages listed in `requirements.txt`.
+
+<br />
+
+## Docker Compose
+
+Docker Compose is used to define and manage multi-container Docker applications. Here's the Docker Compose configuration for this project:
+
+```docker
+version: '3.8'
+x-airflow-common:
+  &airflow-common
+  build:
+   context: .
+   dockerfile: Dockerfile
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.7.1}
+  environment:
+    &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+  volumes:
+    - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
+    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
+    - ${AIRFLOW_PROJ_DIR:-.}/scripts:/opt/airflow/scripts
+  user: "${AIRFLOW_UID:-1000}:0"
+  depends_on:
+    &airflow-common-depends-on
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    ports:
+      - '5423:5432'
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: always
+
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        function ver() {
+          printf "%04d%04d%04d%04d" $${1//./ }
+        }
+        airflow_version=$$(AIRFLOW__LOGGING__LOGGING_LEVEL=INFO && gosu airflow airflow version)
+        airflow_version_comparable=$$(ver $${airflow_version})
+        min_airflow_version=2.2.0
+        min_airflow_version_comparable=$$(ver $${min_airflow_version})
+        if (( airflow_version_comparable < min_airflow_version_comparable )); then
+          echo
+          echo -e "\033[1;31mERROR!!!: Too old Airflow version $${airflow_version}!\e[0m"
+          echo "The minimum Airflow version supported: $${min_airflow_version}. Only use this or higher!"
+          echo
+          exit 1
+        fi
+        if [[ -z "${AIRFLOW_UID}" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo "If you are on Linux, you SHOULD follow the instructions below to set "
+          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "For other operating systems you can get rid of the warning with manually created .env file:"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo
+        fi
+        one_meg=1048576
+        mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+        cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+        disk_available=$$(df / | tail -1 | awk '{print $$4}')
+        warning_resources="false"
+        if (( mem_available < 4000 )) ; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+          echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+          echo
+          warning_resources="true"
+        fi
+        if (( cpus_available < 2 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+          echo "At least 2 CPUs recommended. You have $${cpus_available}"
+          echo
+          warning_resources="true"
+        fi
+        if (( disk_available < one_meg * 10 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+          echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+          echo
+          warning_resources="true"
+        fi
+        if [[ $${warning_resources} == "true" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+          echo "Please follow the instructions to increase amount of resources available:"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo
+        fi
+        mkdir -p /sources/logs /sources/dags /sources/plugins sources/scripts sources/data
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins,scripts,data}
+        exec /entrypoint airflow version
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_MIGRATE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      _PIP_ADDITIONAL_REQUIREMENTS: ''
+    user: "0:0"
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}:/sources
+
+  airflow-cli:
+    <<: *airflow-common
+    profiles:
+      - debug
+    environment:
+      <<: *airflow-common-env
+      CONNECTION_CHECK_MAX_COUNT: "0"
+    command:
+      - bash
+      - -c
+      - airflow
+
+volumes:
+  postgres-db-volume:
+  mariadb-data:
+```
+
+### Explanation:
+
+- **Common Configuration**: The `x-airflow-common` section defines common settings for all Airflow services, including environment variables, volumes, and dependencies.
+- **PostgreSQL Service**: The `postgres` service sets up a PostgreSQL database for Airflow, with environment variables for the database user, password, and name.
+- **MariaDB Service**: The `mariadb` service sets up a MariaDB database, with environment variables for the database user, password, and name.
+- **Airflow Services**: The `airflow-webserver`, `airflow-scheduler`, and `airflow-triggerer` services define the commands and health checks for running Airflow components.
+- **Initialization Service**: The `airflow-init` service initializes the Airflow environment, including database migrations and user creation.
+
+<br />
+
+## Requirements
+
+The `requirements.txt` file lists the Python packages required for the project:
+
+```docker
+pyspark
+pandas
+apache-airflow
+apache-airflow-providers-apache-spark
+apache-airflow-providers-mysql
+apache-airflow-providers-openlineage>=1.8.0
+```
+
+### Explanation:
+
+- **pyspark**: Required for Apache Spark integration.
+- **pandas**: Used for data manipulation and analysis.
+- **apache-airflow**: Core Airflow package.
+- **apache-airflow-providers-apache-spark**: Airflow provider for Apache Spark.
+- **apache-airflow-providers-mysql**: Airflow provider for MySQL.
+- **apache-airflow-providers-openlineage**: Airflow provider for OpenLineage.
+
+<br />
+
+## Conclusion
+
+By using Docker and Docker Compose, we can easily manage and deploy the GradSync project in a consistent and portable environment. This setup ensures that all dependencies and configurations are properly isolated, making it easier to develop, test, and deploy the application.

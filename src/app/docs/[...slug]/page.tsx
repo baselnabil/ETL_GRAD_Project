@@ -4,6 +4,7 @@ import components from "@/mdx-components";
 import { compileMDX } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
+import rehypeImageSize from "@/../src/lib/rehype-image-size.js"
 import Navbar from "@/app/_components/navbar";
 import { DocsMenu } from "../Nav";
 import React from "react";
@@ -74,7 +75,7 @@ export default async function DocsPage({ params }: Params) {
 		options: {
 			mdxOptions: {
 				rehypePlugins: [ rehypeSlug],
-				remarkPlugins: [remarkGfm],
+				remarkPlugins: [remarkGfm, [rehypeImageSize, { root: process.cwd() }]],
 			},
 			parseFrontmatter: true,
 		},

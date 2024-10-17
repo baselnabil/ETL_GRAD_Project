@@ -5,13 +5,16 @@ import React from "react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import pythonLang from "react-syntax-highlighter/dist/cjs/languages/prism/python";
 import sqlLang from "react-syntax-highlighter/dist/cjs/languages/prism/sql";
+import dockerlang from "react-syntax-highlighter/dist/cjs/languages/prism/docker";
+import bashlang from "react-syntax-highlighter/dist/cjs/languages/prism/bash";
 import { a11yDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import CodeBlock from "./app/_components/CodeBlock";
 
 
 SyntaxHighlighter.registerLanguage("py", pythonLang);
-
 SyntaxHighlighter.registerLanguage("sql", sqlLang);
+SyntaxHighlighter.registerLanguage("docker", dockerlang);
+SyntaxHighlighter.registerLanguage("bash", bashlang);
 
 // Define custom MDX components
 const components: MDXComponents = {
@@ -25,7 +28,9 @@ const components: MDXComponents = {
       {props.children}
     </div>
   ),
-  Image: (props) => ( <Image {...props} alt={props.alt} /> ),
+  Image: (props) => {
+    const src = props.src.split("public")[1];
+  return (<div> <Image {...props} src = {src} alt={props.alt} /></div>) },
   h1: ({ children }) => (
     <h1 className="text-4xl font-bold my-4">{children}</h1>
   ),
