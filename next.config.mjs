@@ -5,18 +5,18 @@ import rehypeImageSize from "./src/lib/rehype-image-size.mjs"
 
 const withMDX = mdx({
   extension: /\.mdx?$/,
-  output: "export",
-  options: {
+    options: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypeSlug, [rehypeImageSize, { root: process.cwd() }]],
-  },
-  images: {
-    unoptimized: true
-}
+  }
 });
  
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    output: 'export',
+    images: {
+      unoptimized: true,
+    },
     basePath: process.env.NODE_ENV === "development" ? "":"/ETL_GRAD_Project",
   // Configure `pageExtensions` to include MDX files
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],

@@ -41,10 +41,13 @@ jobs:
       - name: Add .nojekyll
         run: touch ./.next/.nojekyll
 
+      - name: Add .nojekyll (out)
+        run: touch ./out/.nojekyll
+
       - name: Upload artifact 📡
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./.next 
+          path: ./out 
 
   deploy:
     environment:
