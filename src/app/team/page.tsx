@@ -16,12 +16,12 @@ const TeamMember: React.FC<{ name: string; position: string }> = ({
 
 const TeamOverview: React.FC = () => {
   const teamMembers = [
-    { name: "Basil Nabil", position: "Team leader - [Airflow, docker, data]" },
-    { name: "Youssef Reda Mohamed", position: "Team member - [ML - Data - Docs]" },
-    { name: "Nadia", position: "Team member - [Airflow - ML - PowerBI]" },
-    { name: "A BGR", position: "Team member - " },
-    { name: "T WAST", position: "Team member -" },
-    { name: "T ALWK", position: "Team member -" },
+    { name: "Basil Nabil Mekky", position: "Team leader - [Airflow, Docker, Database]" },
+    { name: "Youssef Reda Mohamed", position: "Team member - [ML - Database - Docs Site]" },
+    { name: "Nadia Talaat Hassan", position: "Team member - [Airflow - ML - PowerBI]" },
+    { name: "Youssof Waleed Fathi", position: "Team member - [Database - Docs]" },
+    { name: "Mohamed Ahmed Abdel Fattah", position: "Team member - [Database - Presentation" },
+    { name: "Amr Khaled Saber", position: "Team member - [Database - PowerBI" },
   ];
 
 
