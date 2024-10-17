@@ -4,7 +4,7 @@ import components from "@/mdx-components";
 import { compileMDX } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import rehypeImageSize from "@/../src/lib/rehype-image-size.js"
+import rehypeImageSize from "@/../src/lib/rehype-image-size.mjs"
 import Navbar from "@/app/_components/navbar";
 import { DocsMenu } from "../Nav";
 import React from "react";

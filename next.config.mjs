@@ -1,7 +1,7 @@
 import mdx from '@next/mdx';
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import rehypeImageSize from "./src/lib/rehype-image-size.js"
+import rehypeImageSize from "./src/lib/rehype-image-size.mjs"
 
 const withMDX = mdx({
   extension: /\.mdx?$/,
