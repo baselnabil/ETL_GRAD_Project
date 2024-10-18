@@ -1,0 +1,72 @@
+[2024-10-16T19:44:35.729+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-16T19:44:35.747+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v10.create_dimensions manual__2024-10-16T19:44:34.744237+00:00 [queued]>
+[2024-10-16T19:44:35.757+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v10.create_dimensions manual__2024-10-16T19:44:34.744237+00:00 [queued]>
+[2024-10-16T19:44:35.757+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-16T19:44:35.886+0000] {taskinstance.py:2888} INFO - Executing <Task(MySqlOperator): create_dimensions> on 2024-10-16 19:44:34.744237+00:00
+[2024-10-16T19:44:35.892+0000] {standard_task_runner.py:72} INFO - Started process 1090 to run task
+[2024-10-16T19:44:35.896+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v10', 'create_dimensions', 'manual__2024-10-16T19:44:34.744237+00:00', '--job-id', '84', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmpvw9hb7wj']
+[2024-10-16T19:44:35.898+0000] {standard_task_runner.py:105} INFO - Job 84: Subtask create_dimensions
+[2024-10-16T19:44:35.939+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v10.create_dimensions manual__2024-10-16T19:44:34.744237+00:00 [running]> on host ff82e7275d8f
+[2024-10-16T19:44:36.017+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v10' AIRFLOW_CTX_TASK_ID='create_dimensions' AIRFLOW_CTX_EXECUTION_DATE='2024-10-16T19:44:34.744237+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-16T19:44:34.744237+00:00'
+[2024-10-16T19:44:36.018+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-16T19:44:36.030+0000] {sql.py:274} INFO - Executing: 
+    USE main;
+    
+    CREATE TABLE IF NOT EXISTS job_dim (
+        job_id INT AUTO_INCREMENT PRIMARY KEY,
+        job_title VARCHAR(100) NOT NULL,
+        experience_level VARCHAR(50) NOT NULL,
+        employment_type VARCHAR(50) NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS employee_dim (
+        employee_id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_residence VARCHAR(100) NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS company_dim (
+        company_id INT AUTO_INCREMENT PRIMARY KEY,
+        company_location VARCHAR(100) NOT NULL,
+        company_size VARCHAR(20) NOT NULL,
+        remote_ratio INT NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS currency_dim (
+        currency_id INT AUTO_INCREMENT PRIMARY KEY,
+        salary_currency CHAR(10) NOT NULL
+    );
+    
+[2024-10-16T19:44:36.040+0000] {base.py:84} INFO - Retrieving connection 'mariadb'
+[2024-10-16T19:44:36.049+0000] {base.py:84} INFO - Retrieving connection 'mariadb'
+[2024-10-16T19:44:36.079+0000] {sql.py:418} INFO - Running statement: 
+    USE main;
+    
+    CREATE TABLE IF NOT EXISTS job_dim (
+        job_id INT AUTO_INCREMENT PRIMARY KEY,
+        job_title VARCHAR(100) NOT NULL,
+        experience_level VARCHAR(50) NOT NULL,
+        employment_type VARCHAR(50) NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS employee_dim (
+        employee_id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_residence VARCHAR(100) NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS company_dim (
+        company_id INT AUTO_INCREMENT PRIMARY KEY,
+        company_location VARCHAR(100) NOT NULL,
+        company_size VARCHAR(20) NOT NULL,
+        remote_ratio INT NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS currency_dim (
+        currency_id INT AUTO_INCREMENT PRIMARY KEY,
+        salary_currency CHAR(10) NOT NULL
+    );
+    , parameters: None
+[2024-10-16T19:44:36.079+0000] {sql.py:427} INFO - Rows affected: 0
+[2024-10-16T19:44:36.087+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-16T19:44:36.087+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=main_v10, task_id=create_dimensions, run_id=manual__2024-10-16T19:44:34.744237+00:00, execution_date=20241016T194434, start_date=20241016T194435, end_date=20241016T194436
+[2024-10-16T19:44:36.108+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-10-16T19:44:36.120+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

@@ -1,0 +1,17 @@
+[2024-10-16T19:47:25.832+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-16T19:47:25.850+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v10.extract manual__2024-10-16T19:47:19.764937+00:00 [queued]>
+[2024-10-16T19:47:25.858+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v10.extract manual__2024-10-16T19:47:19.764937+00:00 [queued]>
+[2024-10-16T19:47:25.858+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-16T19:47:25.984+0000] {taskinstance.py:2888} INFO - Executing <Task(PythonOperator): extract> on 2024-10-16 19:47:19.764937+00:00
+[2024-10-16T19:47:25.990+0000] {standard_task_runner.py:72} INFO - Started process 2122 to run task
+[2024-10-16T19:47:25.997+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v10', 'extract', 'manual__2024-10-16T19:47:19.764937+00:00', '--job-id', '100', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmpphsmmacc']
+[2024-10-16T19:47:26.002+0000] {standard_task_runner.py:105} INFO - Job 100: Subtask extract
+[2024-10-16T19:47:26.045+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v10.extract manual__2024-10-16T19:47:19.764937+00:00 [running]> on host ff82e7275d8f
+[2024-10-16T19:47:26.114+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v10' AIRFLOW_CTX_TASK_ID='extract' AIRFLOW_CTX_EXECUTION_DATE='2024-10-16T19:47:19.764937+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-16T19:47:19.764937+00:00'
+[2024-10-16T19:47:26.115+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-16T19:47:36.044+0000] {python.py:240} INFO - Done. Returned value was: None
+[2024-10-16T19:47:36.056+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-16T19:47:36.056+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=main_v10, task_id=extract, run_id=manual__2024-10-16T19:47:19.764937+00:00, execution_date=20241016T194719, start_date=20241016T194725, end_date=20241016T194736
+[2024-10-16T19:47:36.102+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-10-16T19:47:36.141+0000] {taskinstance.py:3900} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2024-10-16T19:47:36.142+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

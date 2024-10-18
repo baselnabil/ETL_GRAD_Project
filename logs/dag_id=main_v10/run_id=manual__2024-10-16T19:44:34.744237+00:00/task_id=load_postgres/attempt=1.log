@@ -1,0 +1,18 @@
+[2024-10-16T19:45:03.624+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-16T19:45:03.645+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v10.load_postgres manual__2024-10-16T19:44:34.744237+00:00 [queued]>
+[2024-10-16T19:45:03.657+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v10.load_postgres manual__2024-10-16T19:44:34.744237+00:00 [queued]>
+[2024-10-16T19:45:03.657+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-16T19:45:03.786+0000] {taskinstance.py:2888} INFO - Executing <Task(PythonOperator): load_postgres> on 2024-10-16 19:44:34.744237+00:00
+[2024-10-16T19:45:03.794+0000] {standard_task_runner.py:72} INFO - Started process 1577 to run task
+[2024-10-16T19:45:03.800+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v10', 'load_postgres', 'manual__2024-10-16T19:44:34.744237+00:00', '--job-id', '91', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmpnj54bftb']
+[2024-10-16T19:45:03.806+0000] {standard_task_runner.py:105} INFO - Job 91: Subtask load_postgres
+[2024-10-16T19:45:03.850+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v10.load_postgres manual__2024-10-16T19:44:34.744237+00:00 [running]> on host ff82e7275d8f
+[2024-10-16T19:45:03.930+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v10' AIRFLOW_CTX_TASK_ID='load_postgres' AIRFLOW_CTX_EXECUTION_DATE='2024-10-16T19:44:34.744237+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-16T19:44:34.744237+00:00'
+[2024-10-16T19:45:03.931+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-16T19:45:13.103+0000] {logging_mixin.py:190} INFO - Data successfully loaded to PostgreSQL
+[2024-10-16T19:45:13.103+0000] {python.py:240} INFO - Done. Returned value was: None
+[2024-10-16T19:45:13.115+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-16T19:45:13.116+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=main_v10, task_id=load_postgres, run_id=manual__2024-10-16T19:44:34.744237+00:00, execution_date=20241016T194434, start_date=20241016T194503, end_date=20241016T194513
+[2024-10-16T19:45:13.155+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-10-16T19:45:13.200+0000] {taskinstance.py:3900} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2024-10-16T19:45:13.202+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

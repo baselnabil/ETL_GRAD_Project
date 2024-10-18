@@ -20,11 +20,11 @@ BEGIN
     -- Insert old data into the archive table
     INSERT INTO archived_staging_data
     SELECT * FROM staging_data 
-    WHERE load_time < current_timestamp - INTERVAL '1 hour';
+    WHERE load_time < current_timestamp - INTERVAL '1 day';
 
     -- Delete old data from the staging table
     DELETE FROM staging_data
-    WHERE load_time < current_timestamp - INTERVAL '1 hour';
+    WHERE load_time < current_timestamp - INTERVAL '1 day';
 
 END;
 $$ LANGUAGE PLPGSQL;

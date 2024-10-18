@@ -1,0 +1,21 @@
+[2024-10-16T19:44:39.627+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2024-10-16T19:44:39.643+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: main_v10.run_archive_function manual__2024-10-16T19:44:34.744237+00:00 [queued]>
+[2024-10-16T19:44:39.653+0000] {taskinstance.py:2612} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: main_v10.run_archive_function manual__2024-10-16T19:44:34.744237+00:00 [queued]>
+[2024-10-16T19:44:39.653+0000] {taskinstance.py:2865} INFO - Starting attempt 1 of 6
+[2024-10-16T19:44:39.777+0000] {taskinstance.py:2888} INFO - Executing <Task(PostgresOperator): run_archive_function> on 2024-10-16 19:44:34.744237+00:00
+[2024-10-16T19:44:39.784+0000] {standard_task_runner.py:72} INFO - Started process 1104 to run task
+[2024-10-16T19:44:39.788+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'main_v10', 'run_archive_function', 'manual__2024-10-16T19:44:34.744237+00:00', '--job-id', '88', '--raw', '--subdir', 'DAGS_FOLDER/main.py', '--cfg-path', '/tmp/tmpe7gz31pc']
+[2024-10-16T19:44:39.790+0000] {standard_task_runner.py:105} INFO - Job 88: Subtask run_archive_function
+[2024-10-16T19:44:39.833+0000] {task_command.py:467} INFO - Running <TaskInstance: main_v10.run_archive_function manual__2024-10-16T19:44:34.744237+00:00 [running]> on host ff82e7275d8f
+[2024-10-16T19:44:39.902+0000] {taskinstance.py:3131} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='main_v10' AIRFLOW_CTX_TASK_ID='run_archive_function' AIRFLOW_CTX_EXECUTION_DATE='2024-10-16T19:44:34.744237+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-10-16T19:44:34.744237+00:00'
+[2024-10-16T19:44:39.903+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2024-10-16T19:44:39.912+0000] {sql.py:274} INFO - Executing: SELECT archive_old_data();
+[2024-10-16T19:44:39.919+0000] {base.py:84} INFO - Retrieving connection 'postgresid'
+[2024-10-16T19:44:39.927+0000] {base.py:84} INFO - Retrieving connection 'postgresid'
+[2024-10-16T19:44:39.931+0000] {sql.py:418} INFO - Running statement: SELECT archive_old_data();, parameters: None
+[2024-10-16T19:44:40.013+0000] {sql.py:427} INFO - Rows affected: 1
+[2024-10-16T19:44:40.045+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2024-10-16T19:44:40.045+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=main_v10, task_id=run_archive_function, run_id=manual__2024-10-16T19:44:34.744237+00:00, execution_date=20241016T194434, start_date=20241016T194439, end_date=20241016T194440
+[2024-10-16T19:44:40.079+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2024-10-16T19:44:40.134+0000] {taskinstance.py:3900} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2024-10-16T19:44:40.136+0000] {local_task_job_runner.py:245} INFO - ::endgroup::
