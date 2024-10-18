@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { ReactNode, useState } from "react";
 import { Heading } from "@/app/_lib/loadContent";
@@ -16,11 +17,11 @@ export const DocsNav = [
       },
     ],
   },
-   {
-    header: "PowerBI",
-    color: "black",
+  {
+    header: "Docker",
+    color: "grey",
     items: [
-      { href: "/docs/powerbi/powerbi-overview", label: "PowerBI Overview" },
+      { href: "/docs/docker/docker-overview", label: "Docker Overview" },
     ]
   },
   {
@@ -36,14 +37,6 @@ export const DocsNav = [
     ],
   },
   {
-    header: "Machine Learning",
-    color: "purple",
-    items: [
-      { href: "/docs/ml/ml-overview", label: "ML Overview" },
-      { href: "/docs/ml/ml-cexplanation", label: "ML Code Explanation" },
-    ]
-  },
-  {
     header: "Airflow",
     color: "red",
     items: [
@@ -51,11 +44,13 @@ export const DocsNav = [
       { href: "/docs/airflow/airflow-cexplanation", label: "Airflow Code Explanation" },
     ]
   },
+  // Note: Power BI section is not present in the original code
   {
-    header: "Docker",
-    color: "grey",
+    header: "Machine Learning",
+    color: "purple",
     items: [
-      { href: "/docs/docker/docker-overview", label: "Docker Overview" },
+      { href: "/docs/ml/ml-overview", label: "ML Overview" },
+      { href: "/docs/ml/ml-cexplanation", label: "ML Code Explanation" },
     ]
   },
   {
@@ -65,7 +60,6 @@ export const DocsNav = [
       { href: "/docs/docss/docss-overview", label: "Docs Site Overview" },
     ]
   }
-  // ...
 ];
 
 interface NavHeaderProps {
