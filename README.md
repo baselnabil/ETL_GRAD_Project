@@ -203,3 +203,80 @@ def extract_data():
 ![dags](./images/dags.jpeg)
 ## Machine Learning and Power BI Integration
 ![powerbi](/images/powerbi.jpg)
+
+## Machine Learning and Power BI Integration
+
+### 1. Importing Libraries
+
+```python
+import pandas as pd
+import numpy as np
+import re
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import OneHotEncoder
+```
+
+### Key Points:
+- **Libraries**: Common libraries are imported for data manipulation (Pandas), numerical operations (NumPy), visualization (Matplotlib and Seaborn), and machine learning (Scikit-learn).
+
+---
+
+### 2. Data Loading and Preprocessing
+
+```python
+# Load the data
+data = pd.read_csv('data_engineer_salaries.csv')
+
+# Handling missing values
+data = data.dropna()
+
+# One-hot encoding categorical variables
+categorical_columns = ['experience_level', 'employment_type', 'job_title', 'company_location']
+encoder = OneHotEncoder(sparse=False)
+encoded_data = encoder.fit_transform(data[categorical_columns])
+
+# Feature matrix (X) and target variable (y)
+X = pd.concat([pd.DataFrame(encoded_data), data[['work_year', 'salary_in_usd']]], axis=1)
+y = data['salary_in_usd']
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+
+### Key Points:
+- **Data Loading**: The dataset is loaded from a CSV file, and any rows with missing values are dropped.
+- **Encoding**: Categorical features are transformed into a numerical format using one-hot encoding.
+- **Feature and Target Creation**: The feature matrix (X) combines encoded categorical data with numerical features, while the target variable (y) is the salary in USD.
+- **Train-Test Split**: The dataset is divided into training and testing sets, with 80% used for training and 20% for testing.
+
+---
+
+### 3. Model Training and Evaluation
+
+```python
+# Initialize the Random Forest Regressor
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+# Train the model
+rf_model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = rf_model.predict(X_test)
+
+# Evaluate the model's performance
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f"Mean Squared Error: {mse}")
+print(f"R-squared: {r2}")
+```
+
+### Key Points:
+- **Model Selection**: A Random Forest Regressor is chosen for its robustness in handling complex relationships.
+- **Model Training**: The model is trained on the training dataset.
+- **Prediction**: Predictions are made on the test dataset.
+- **Evaluation Metrics**: The model's performance is assessed using Mean Squared Error (MSE) and R-squared (R²), with lower MSE and higher R² indicating better performance.
