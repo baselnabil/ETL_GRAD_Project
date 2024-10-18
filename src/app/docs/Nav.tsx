@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { ReactNode, useState } from "react";
 import { Heading } from "@/app/_lib/loadContent";
@@ -17,7 +16,7 @@ export const DocsNav = [
       },
     ],
   },
-  {
+    {
     header: "Docker",
     color: "grey",
     items: [
@@ -44,8 +43,14 @@ export const DocsNav = [
       { href: "/docs/airflow/airflow-cexplanation", label: "Airflow Code Explanation" },
     ]
   },
-  // Note: Power BI section is not present in the original code
   {
+    header: "PowerBI",
+    color: "black",
+    items: [
+      { href: "/docs/powerbi/powerbi-overview", label: "PowerBI Overview" },
+    ]
+  },
+    {
     header: "Machine Learning",
     color: "purple",
     items: [
@@ -60,6 +65,7 @@ export const DocsNav = [
       { href: "/docs/docss/docss-overview", label: "Docs Site Overview" },
     ]
   }
+  // ...
 ];
 
 interface NavHeaderProps {
