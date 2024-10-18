@@ -16,6 +16,13 @@ export const DocsNav = [
       },
     ],
   },
+   {
+    header: "PowerBI",
+    color: "black",
+    items: [
+      { href: "/docs/powerbi/powerbi-overview", label: "PowerBI Overview" },
+    ]
+  },
   {
     header: "Data",
     color: "blue",
@@ -42,13 +49,6 @@ export const DocsNav = [
     items: [
       { href: "/docs/airflow/airflow-overview", label: "Airflow Overview" },
       { href: "/docs/airflow/airflow-cexplanation", label: "Airflow Code Explanation" },
-    ]
-  },
-  {
-    header: "PowerBI",
-    color: "black",
-    items: [
-      { href: "/docs/powerbi/powerbi-overview", label: "PowerBI Overview" },
     ]
   },
   {
